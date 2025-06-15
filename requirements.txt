@@ -2,6 +2,10 @@
 python-dotenv>=1.0.0
 qdrant-client>=1.7.0
 langchain>=0.3.0
+langchain-google-genai>=2.0.0
+langchain-huggingface>=0.1.0
+sentence-transformers
+einops
 
 # Optional: Add these if you plan to use more advanced embedding models
 # openai>=1.0.0
