@@ -7,6 +7,9 @@ langchain-huggingface>=0.1.0
 langchain-qdrant>=0.1.0
 sentence-transformers
 einops
+moviepy
+ffmpeg-python
+google-adk
 
 
 # Optional: Add these if you plan to use more advanced embedding models
