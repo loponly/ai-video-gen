@@ -10,7 +10,7 @@ einops
 moviepy
 ffmpeg-python
 google-adk
-
+youtube-transcript-api
 
 # Optional: Add these if you plan to use more advanced embedding models
 # openai>=1.0.0
