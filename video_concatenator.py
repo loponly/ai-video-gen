@@ -14,20 +14,36 @@ import os
 import re
 import glob
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Union, Any
 import logging
 
+# Try to import MoviePy components
 try:
-    from moviepy.editor import (
+    from moviepy import (
         VideoFileClip, AudioFileClip, concatenate_videoclips,
         CompositeVideoClip, vfx
     )
-    from moviepy.video.fx import fadein, fadeout, crossfadein, crossfadeout
+    # Import effects from vfx
+    fadein = vfx.FadeIn
+    fadeout = vfx.FadeOut
+    crossfadein = vfx.CrossFadeIn
+    crossfadeout = vfx.CrossFadeOut
+    
     MOVIEPY_AVAILABLE = True
-except ImportError:
-    print("MoviePy not found. Please install it using: pip install moviepy")
+    
+    # Type hints for when MoviePy is available
+    VideoClipType = VideoFileClip
+    AudioClipType = AudioFileClip
+    
+except ImportError as e:
+    print(f"MoviePy import error: {e}")
+    print("Please install it using: pip install moviepy")
     print("Or run: pip install -r requirements.txt")
     MOVIEPY_AVAILABLE = False
+    
+    # Type hints for when MoviePy is not available
+    VideoClipType = Any
+    AudioClipType = Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -57,8 +73,11 @@ class VideoProcessor:
         logger.info(f"Found {len(video_files)} video files: {[f.name for f in video_files]}")
         return video_files
     
-    def load_video_clips(self, video_files: List[Path]) -> List[VideoFileClip]:
+    def load_video_clips(self, video_files: List[Path]):
         """Load video clips from file paths."""
+        if not MOVIEPY_AVAILABLE:
+            raise ImportError("MoviePy is required but not available")
+            
         clips = []
         for video_file in video_files:
             try:
@@ -70,8 +89,11 @@ class VideoProcessor:
                 continue
         return clips
     
-    def concatenate_videos(self, clips: List[VideoFileClip]) -> VideoFileClip:
+    def concatenate_videos(self, clips):
         """Concatenate video clips with smooth transitions."""
+        if not MOVIEPY_AVAILABLE:
+            raise ImportError("MoviePy is required but not available")
+            
         if not clips:
             raise ValueError("No video clips to concatenate")
         
@@ -80,10 +102,10 @@ class VideoProcessor:
         for i, clip in enumerate(clips):
             if i == 0:
                 # First clip: fade in at the beginning
-                processed_clip = clip.fx(fadein, self.fade_duration)
+                processed_clip = clip.with_effects([fadein(self.fade_duration)])
             elif i == len(clips) - 1:
                 # Last clip: fade out at the end
-                processed_clip = clip.fx(fadeout, self.fade_duration)
+                processed_clip = clip.with_effects([fadeout(self.fade_duration)])
             else:
                 # Middle clips: no special effects for now
                 processed_clip = clip
@@ -95,13 +117,16 @@ class VideoProcessor:
         logger.info(f"Concatenated video duration: {final_video.duration:.2f}s")
         return final_video
     
-    def extend_video_to_match_audio(self, video: VideoFileClip, audio_duration: float) -> VideoFileClip:
+    def extend_video_to_match_audio(self, video, audio_duration: float):
         """Extend video by repeating scenes with transitions to match audio duration."""
+        if not MOVIEPY_AVAILABLE:
+            raise ImportError("MoviePy is required but not available")
+            
         video_duration = video.duration
         
         if video_duration >= audio_duration:
             logger.info("Video is already longer than or equal to audio duration")
-            return video.subclip(0, audio_duration)
+            return video.subclipped(0, audio_duration)
         
         logger.info(f"Extending video from {video_duration:.2f}s to {audio_duration:.2f}s")
         
@@ -122,11 +147,11 @@ class VideoProcessor:
             
             # Create a segment from a random part of the original video
             start_time = (len(extension_clips) * 3) % max(1, video_duration - clip_duration)
-            segment = video.subclip(start_time, min(start_time + clip_duration, video_duration))
+            segment = video.subclipped(start_time, min(start_time + clip_duration, video_duration))
             
             # Add cross-fade effect for smooth transitions
             if extension_clips:
-                segment = segment.fx(crossfadein, self.fade_duration)
+                segment = segment.with_effects([crossfadein(self.fade_duration)])
             
             extension_clips.append(segment)
             current_extension_duration += segment.duration
@@ -134,14 +159,14 @@ class VideoProcessor:
         # Combine original video with extensions
         if extension_clips:
             # Add cross-fade to the first extension clip
-            extension_clips[0] = extension_clips[0].fx(crossfadein, self.fade_duration)
+            extension_clips[0] = extension_clips[0].with_effects([crossfadein(self.fade_duration)])
             all_clips = [video] + extension_clips
             extended_video = concatenate_videoclips(all_clips, method="compose")
         else:
             extended_video = video
         
         # Trim to exact audio duration
-        final_video = extended_video.subclip(0, audio_duration)
+        final_video = extended_video.subclipped(0, audio_duration)
         logger.info(f"Final video duration: {final_video.duration:.2f}s")
         return final_video
     
@@ -171,7 +196,7 @@ class VideoProcessor:
             final_video = self.extend_video_to_match_audio(concatenated_video, audio.duration)
             
             # Step 5: Add audio to video
-            final_video_with_audio = final_video.set_audio(audio)
+            final_video_with_audio = final_video.with_audio(audio)
             
             # Step 6: Export final video
             logger.info(f"Exporting final video to: {self.output_file}")
@@ -183,8 +208,7 @@ class VideoProcessor:
                 audio_codec='aac',
                 temp_audiofile='temp-audio.m4a',
                 remove_temp=True,
-                verbose=False,
-                logger=None
+                logger=None  # Disable progress bar for cleaner output
             )
             
             logger.info("Video processing completed successfully!")
