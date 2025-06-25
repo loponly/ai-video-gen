@@ -11,6 +11,9 @@ moviepy
 ffmpeg-python
 google-adk
 youtube-transcript-api
+tiktoken
+sentencepiece
+yt-dlp
 
 # Optional: Add these if you plan to use more advanced embedding models
 # openai>=1.0.0
