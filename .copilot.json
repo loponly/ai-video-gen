@@ -9,6 +9,7 @@
         "# 4. All logic should be unit-tested. Use pytest. Mock I/O.",
         "# 5. Avoid global state, hardcoded values, and side effects.",
         "# 6. Code should be clean, maintainable, modular, and testable.",
-        "# 7. Follow PEP8, use black + ruff + mypy."
+        "# 7. Follow PEP8, use black + ruff + mypy.",
+        "# 8. All test must be in a separate test file and store in tests folder."
     ]
 }
