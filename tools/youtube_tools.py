@@ -80,7 +80,7 @@ def get_video_info(url: str) -> Dict[str, Union[str, int]]:
     
     return filtered_info
 
-def search_videos(keyword: str, max_results: int = 5, ydl_opts: Dict[str, Union[str, int, bool]] = None) -> List[Dict[str, Union[str, int]]]:
+def search_videos(keyword: str, max_results: int = 5, ydl_opts: Union[Dict[str, Union[str, int, bool]],None] = None) -> List[Dict[str, Union[str, int]]]:
     """
     Searches YouTube for a given keyword and returns a list of video information.
 
@@ -493,7 +493,7 @@ def search_videos(keyword: str, max_results: int = 5, ydl_opts: Dict[str, Union[
 
 
 
-def download_youtube_video(url: str, save_dir: str = "./downloads", cookie_file: str = None) -> str:
+def download_youtube_video(url: str, save_dir: str = "./downloads", cookie_file: Union[str, None] = None) -> str:
     """Robustly downloads the best available version of a YouTube video."""
     os.makedirs(save_dir, exist_ok=True)
 
@@ -510,7 +510,7 @@ def download_youtube_video(url: str, save_dir: str = "./downloads", cookie_file:
     return os.path.abspath(ydl.prepare_filename(info))
 
 
-def convert_webm_to_mp4(input_file: str, output_file: str = None) -> str:
+def convert_webm_to_mp4(input_file: str, output_file: Union[str, None] = None) -> str:
     """
     Converts a .webm video to .mp4 using MoviePy.
     

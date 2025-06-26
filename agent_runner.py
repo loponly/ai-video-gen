@@ -26,25 +26,26 @@ APP_NAME = "Content Creator Agents"
 USER_ID =  "user-12345"  # Replace with your user ID
 SESSION_ID = "session-12345"  # Replace with your session ID
 
-
-session_service = session_service.create_session(
+async def create_runner():
+    """
+    Create a Runner instance for the YouTube agent.
+    
+    :return: A Runner instance configured with the YouTube agent and session service.
+    """
+    await session_service.create_session(
     app_name=APP_NAME,
     user_id=USER_ID,
     session_id=SESSION_ID
-)
+    )
+  # Ensure the session service is initialized
+    return Runner(
+        agent=youtube_agent,
+        app_name=APP_NAME,
+        session_service=session_service
+    )
 
 
-# --- Runner ---
-# Key Concept: Runner orchestrates the agent execution loop.
-
-runner = Runner(
-    agent=youtube_agent,
-    app_name=APP_NAME,
-    session_service=session_service
-)
-
-
-async def call_agent_async(prompt: str,runner: Runner,user_id: str, session_id: str) -> types.Response:
+async def call_agent_async(prompt: str,runner: Runner,user_id: str, session_id: str) -> str:
     """
     Call the agent asynchronously with the given prompt.
     
@@ -76,12 +77,16 @@ async def run_conversation():
     
     This function will prompt the user for input and call the agent asynchronously.
     """
+    runner = await create_runner()
     await call_agent_async("What is information about this video https://www.youtube.com/watch?v=wPc6mANhIj4",
                                        runner=runner,
                                        user_id=USER_ID,
                                        session_id=SESSION_ID)
+    
+    
+    
+
 if __name__ == "__main__":
     print(f"👋 Welcome to {APP_NAME}!")
-    print(f"Running agent: {runner.agent.name}")
 
     asyncio.run(run_conversation())
