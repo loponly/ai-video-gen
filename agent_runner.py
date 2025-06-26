@@ -10,7 +10,7 @@ from google.adk.runners import Runner
 from google.genai import types
 
 
-from adk_agents.youtube_agent import youtube_agent
+from adk_agents.agents import youtube_agent, video_editor_agent,video_agents_team
 
 
 # InMemorySessionService is simple, non-persistent storage for this tutorial.
@@ -21,6 +21,9 @@ load_dotenv()
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
+
+root_agent = video_agents_team
+root_agent_var_name = "video_agents_team"
 
 APP_NAME = "Content Creator Agents"
 USER_ID =  "user-12345"  # Replace with your user ID
@@ -39,7 +42,7 @@ async def create_runner():
     )
   # Ensure the session service is initialized
     return Runner(
-        agent=youtube_agent,
+        agent=root_agent,
         app_name=APP_NAME,
         session_service=session_service
     )
@@ -78,7 +81,8 @@ async def run_conversation():
     This function will prompt the user for input and call the agent asynchronously.
     """
     runner = await create_runner()
-    await call_agent_async("What is information about this video https://www.youtube.com/watch?v=wPc6mANhIj4",
+    await call_agent_async(""" What is information about this video https://www.youtube.com/watch?v=wPc6mANhIj4.
+                           Download the video and extract the transcript. Then concatenate 10 seconds of the video with the transcript.""",
                                        runner=runner,
                                        user_id=USER_ID,
                                        session_id=SESSION_ID)

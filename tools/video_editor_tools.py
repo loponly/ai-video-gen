@@ -197,8 +197,8 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
         }
 
 
-def clip_videos(video_path: str, output_path: str, start_time: float = 0, 
-               end_time: Optional[float] = None, segments: Optional[List[Tuple[float, float]]] = None) -> Dict[str, Any]:
+def clip_videos(video_path: str, output_path: str, start_time: float = 0.0, 
+               end_time: Optional[float] = None, segments: Optional[List] = None) -> Dict[str, Any]:
     """
     Clip video(s) to specified segments.
     

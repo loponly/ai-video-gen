@@ -21,7 +21,7 @@ def validate_agent_instructions():
     print("=" * 60)
     
     # Import the agent and tools
-    from adk_agents.youtube_agent import video_editor_agent
+    from adk_agents.agents import video_editor_agent
     from tools.video_editor_tools import (
         concatenate_videos,
         synchronize_audio,
