@@ -9,8 +9,7 @@ from google.adk.runners import Runner
 
 from google.genai import types
 
-
-from adk_agents.agents import youtube_agent, video_editor_agent,video_agents_team
+from adk_agents.agents import root_agent
 
 
 # InMemorySessionService is simple, non-persistent storage for this tutorial.
@@ -22,12 +21,9 @@ load_dotenv()
 warnings.filterwarnings("ignore")
 
 
-root_agent = video_agents_team
-root_agent_var_name = "video_agents_team"
-
 APP_NAME = "Content Creator Agents"
 USER_ID =  "user-12345"  # Replace with your user ID
-SESSION_ID = "session-12345"  # Replace with your session ID
+SESSION_ID = "session-1234"  # Replace with your session ID
 
 async def create_runner():
     """
@@ -38,7 +34,14 @@ async def create_runner():
     await session_service.create_session(
     app_name=APP_NAME,
     user_id=USER_ID,
-    session_id=SESSION_ID
+    session_id=SESSION_ID,
+    state={
+        "user_preferences": {
+            "language": "en",
+            "video_quality": "720p",
+            "transcript_format": "srt",
+        },
+    }
     )
   # Ensure the session service is initialized
     return Runner(
@@ -81,8 +84,8 @@ async def run_conversation():
     This function will prompt the user for input and call the agent asynchronously.
     """
     runner = await create_runner()
-    await call_agent_async(""" What is information about this video https://www.youtube.com/watch?v=wPc6mANhIj4.
-                           Download the video and extract the transcript. Then concatenate 10 seconds of the video with the transcript.""",
+    await call_agent_async(""" BLOCK What is information about this video  https://www.youtube.com/watch?v=pdwp6S1lrP0.
+                           Download the video and add effects. The effect should fade in and out Then concatenate 10 seconds of the video""",
                                        runner=runner,
                                        user_id=USER_ID,
                                        session_id=SESSION_ID)

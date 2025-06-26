@@ -198,7 +198,7 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
 
 
 def clip_videos(video_path: str, output_path: str, start_time: float = 0.0, 
-               end_time: Optional[float] = None, segments: Optional[List] = None) -> Dict[str, Any]:
+               end_time: Optional[float] = None, segments: Optional[str] = None) -> Dict[str, Any]:
     """
     Clip video(s) to specified segments.
     
@@ -207,7 +207,7 @@ def clip_videos(video_path: str, output_path: str, start_time: float = 0.0,
         output_path: Path where the clipped video will be saved
         start_time: Start time in seconds (for single clip)
         end_time: End time in seconds (for single clip)
-        segments: List of (start, end) tuples for multiple segments
+        segments: JSON string of (start, end) tuples for multiple segments, e.g., "[[0,10],[20,30]]"
     
     Returns:
         Dict with status, message, and output info
@@ -230,9 +230,19 @@ def clip_videos(video_path: str, output_path: str, start_time: float = 0.0,
         
         # Clip video based on parameters
         if segments:
+            # Parse segments from JSON string
+            try:
+                segments_list = json.loads(segments)
+            except json.JSONDecodeError:
+                return {
+                    "status": "error",
+                    "message": f"Invalid segments JSON format: {segments}",
+                    "output_path": None
+                }
+            
             # Multiple segments - concatenate them
             clips = []
-            for start, end in segments:
+            for start, end in segments_list:
                 if end > video.duration:
                     end = video.duration
                 clip = video.subclipped(start, end)

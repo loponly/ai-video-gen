@@ -1,4 +1,5 @@
 from google.adk.agents import Agent
+from guards.block_keyword import block_keyword_guardrail
 
 # Tools imports
 from tools.youtube_tools import (
@@ -36,7 +37,8 @@ youtube_agent = Agent(
     If you need to get video information, use the `get_video_info` tool.
     Make sure to handle errors gracefully and provide useful feedback to the user.
     """,
-    tools=[get_transcript, get_video_info, search_videos, download_youtube_video]
+    tools=[get_transcript, get_video_info, search_videos, download_youtube_video],
+    output_key="youtube_responses"
 )
 
 
@@ -56,7 +58,8 @@ video_editor_agent = Agent(
     If you need to add subtitles or captions, use the `add_subtitles` tool.
     Make sure to handle errors gracefully and provide useful feedback to the user.
     """,
-    tools=[concatenate_videos, synchronize_audio, clip_videos, edit_video_metadata, add_effects, export_video, add_subtitles]
+    tools=[concatenate_videos, synchronize_audio, clip_videos, edit_video_metadata, add_effects, export_video, add_subtitles],
+    output_key="video_editing_responses"
 )
 
 
@@ -65,5 +68,17 @@ video_agents_team = Agent(
     name="Video_Agents_Team_v1",
     model=model_name,
     description="The main orchestrator agent that coordinates between YouTube and Video Editor agents. It also manages the workflow of agent interactions.",
-    sub_agents=[youtube_agent, video_editor_agent]
+    instruction="""You are the Video Agents Team Agent. Your role is to orchestrate tasks between the YouTube and Video Editor agents.
+    You will delegate tasks to the appropriate agent based on the user's request.
+    If the task involves searching for videos, downloading them, or extracting transcripts, delegate to the YouTube Agent.
+    If the task involves editing videos, concatenating clips, synchronizing audio,
+    applying effects, adding subtitles, or exporting videos, delegate to the Video Editor Agent.
+    Ensure that the workflow is smooth and that each agent performs its tasks effectively.
+    Handle errors gracefully and provide useful feedback to the user.
+    """,
+    sub_agents=[youtube_agent, video_editor_agent],
+    output_key="final_responses",
+    before_model_callback=block_keyword_guardrail,
 )
+
+root_agent = video_agents_team
