@@ -7,8 +7,10 @@ langchain-huggingface>=0.1.0
 langchain-qdrant>=0.1.0
 sentence-transformers
 einops
-moviepy
+moviepy==1.0.3
 ffmpeg-python
+Pillow>=9.0.0
+numpy>=1.21.0
 google-adk
 youtube-transcript-api
 tiktoken
@@ -25,3 +27,8 @@ yt-dlp
 # jupyter>=1.0.0
 # ipykernel>=6.0.0
 # notebook>=6.0.0
+
+# Testing dependencies
+pytest>=7.0.0
+pytest-mock>=3.10.0
+pytest-cov>=4.0.0
