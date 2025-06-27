@@ -30,12 +30,15 @@ def create_slideshow_from_images(image_paths: List[str],
                                 output_path: str,
                                 duration_per_image: float = 3.0,
                                 fps: int = 24,
-                                resolution: Tuple[int, int] = (1920, 1080),
+                                resolution_width: int = 1920,
+                                resolution_height: int = 1080,
                                 transition_type: str = "fade",
                                 transition_duration: float = 0.5,
-                                background_color: Tuple[int, int, int] = (0, 0, 0),
+                                background_color_r: int = 0,
+                                background_color_g: int = 0,
+                                background_color_b: int = 0,
                                 fit_mode: str = "contain",
-                                audio_path: Optional[Union[str, Any]] = None,
+                                audio_path: Optional[str] = None,
                                 text_overlays: Optional[List[Dict[str, Any]]] = None,
                                 effects: Optional[List[Dict[str, Any]]] = None) -> Dict[str, Any]:
     """
@@ -46,10 +49,13 @@ def create_slideshow_from_images(image_paths: List[str],
         output_path: Path where the video will be saved
         duration_per_image: Duration each image is displayed (seconds)
         fps: Frames per second for output video
-        resolution: Output video resolution (width, height)
+        resolution_width: Output video width in pixels
+        resolution_height: Output video height in pixels
         transition_type: Type of transition ("fade", "slide_left", "slide_right", "slide_up", "slide_down", "zoom", "crossfade", "none")
         transition_duration: Duration of transitions (seconds)
-        background_color: RGB background color for letterboxing
+        background_color_r: Background red color component (0-255)
+        background_color_g: Background green color component (0-255)
+        background_color_b: Background blue color component (0-255)
         fit_mode: How to fit images ("contain", "cover", "stretch", "crop")
         audio_path: Optional path to audio file to add as background
         text_overlays: List of text overlay configurations
@@ -59,6 +65,10 @@ def create_slideshow_from_images(image_paths: List[str],
         Dict with status, message, and output info
     """
     try:
+        # Convert separate parameters back to tuples for internal use
+        resolution = (resolution_width, resolution_height)
+        background_color = (background_color_r, background_color_g, background_color_b)
+        
         # Validate input images
         if not image_paths:
             return {
@@ -419,10 +429,13 @@ def create_image_slideshow(image_paths: List[str],
                           output_path: str,
                           duration_per_image: float = 3.0,
                           fps: int = 24,
-                          resolution: Tuple[int, int] = (1920, 1080),
+                          resolution_width: int = 1920,
+                          resolution_height: int = 1080,
                           transition_type: str = "fade",
                           transition_duration: float = 0.5,
-                          background_color: Tuple[int, int, int] = (0, 0, 0),
+                          background_color_r: int = 0,
+                          background_color_g: int = 0,
+                          background_color_b: int = 0,
                           fit_mode: str = "contain",
                           audio_path: Optional[str] = None,
                           text_overlays: Optional[List[Dict[str, Any]]] = None,
@@ -499,10 +512,13 @@ def create_image_slideshow(image_paths: List[str],
         output_path=output_path,
         duration_per_image=duration_per_image,
         fps=fps,
-        resolution=resolution,
+        resolution_width=resolution_width,
+        resolution_height=resolution_height,
         transition_type=transition_type,
         transition_duration=transition_duration,
-        background_color=background_color,
+        background_color_r=background_color_r,
+        background_color_g=background_color_g,
+        background_color_b=background_color_b,
         fit_mode=fit_mode,
         audio_path=audio_path,
         text_overlays=text_overlays,

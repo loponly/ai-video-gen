@@ -3,7 +3,7 @@ import os
 from youtube_transcript_api import YouTubeTranscriptApi
 from typing import List, Dict , Union
 from yt_dlp import YoutubeDL
-from moviepy import VideoFileClip
+from moviepy.editor import VideoFileClip
 
 def get_transcript(video_id: str) -> Union[List[Dict[str, str]], None]:
     """

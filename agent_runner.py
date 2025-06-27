@@ -1,6 +1,10 @@
 import os
+import sys
 import asyncio
 import warnings
+import argparse
+from pathlib import Path
+from typing import Dict
 
 from dotenv import load_dotenv
 
@@ -77,23 +81,170 @@ async def call_agent_async(prompt: str,runner: Runner,user_id: str, session_id: 
     return final_response_text
 
 
-async def run_conversation():
+async def run_conversation(query: str = None):
     """
     Run a conversation with the agent.
     
     This function will prompt the user for input and call the agent asynchronously.
+    
+    Args:
+        query: The query to send to the agent. If None, will use a default test query.
     """
+    if query is None:
+        query = "Please help me understand what you can do."
+    
+    print(f">>> User Query: {query}")
     runner = await create_runner()
-    await call_agent_async(""" BLOCK What is information about this video  https://www.youtube.com/watch?v=pdwp6S1lrP0.
-                           Download the video and add effects. The effect should fade in and out Then concatenate 10 seconds of the video""",
-                                       runner=runner,
-                                       user_id=USER_ID,
-                                       session_id=SESSION_ID)
+    response = await call_agent_async(query,
+                                    runner=runner,
+                                    user_id=USER_ID,
+                                    session_id=SESSION_ID)
+    return response
+
+
+def create_test_queries() -> Dict[str, str]:
+    """
+    Create a set of test queries for different agents.
+    
+    Returns:
+        Dictionary of test queries for different scenarios.
+    """
+    return {
+        "image_to_video_basic": """I want to create a simple slideshow video from images. 
+                                   Please create a slideshow using the images in the movie-reels/images/ folder. 
+                                   Make each image display for 3 seconds with fade transitions.""",
+        
+        "image_to_video_advanced": """Create an advanced slideshow video with the following specs:
+                                     - Use images from movie-reels/images/ folder
+                                     - Each image should display for 4 seconds
+                                     - Add slide_left transitions between images
+                                     - Add text overlay saying 'Sample Slideshow' at the top
+                                     - Export to movie-reels/output/test_slideshow.mp4""",
+        
+        "youtube_search": "Search for videos about 'Python programming tutorial' and show me the top 3 results.",
+        
+        "video_editing": "Help me concatenate multiple video files and add subtitles to the final video.",
+        
+        "general": "What can you help me with? Please explain your capabilities."
+    }
+
+
+async def run_test_scenario(test_name: str):
+    """
+    Run a specific test scenario.
+    
+    Args:
+        test_name: Name of the test scenario to run.
+    """
+    test_queries = create_test_queries()
+    
+    if test_name not in test_queries:
+        print(f"❌ Test scenario '{test_name}' not found.")
+        print(f"Available tests: {', '.join(test_queries.keys())}")
+        return
+    
+    print(f"🧪 Running test scenario: {test_name}")
+    print("=" * 50)
+    
+    query = test_queries[test_name]
+    response = await run_conversation(query)
+    
+    print("=" * 50)
+    print(f"✅ Test scenario '{test_name}' completed.")
+    return response
+
+
+def parse_arguments():
+    """
+    Parse command line arguments.
+    
+    Returns:
+        Parsed arguments namespace.
+    """
+    parser = argparse.ArgumentParser(
+        description="AI Video Generation Agent Runner",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  python agent_runner.py --query "Create a slideshow from my images"
+  python agent_runner.py --test image_to_video_basic
+  python agent_runner.py --test-all
+  python agent_runner.py --list-tests
+        """
+    )
+    
+    parser.add_argument(
+        "--query", "-q",
+        type=str,
+        help="Query to send to the agent"
+    )
+    
+    parser.add_argument(
+        "--test", "-t",
+        type=str,
+        help="Run a specific test scenario"
+    )
+    
+    parser.add_argument(
+        "--test-all",
+        action="store_true",
+        help="Run all test scenarios"
+    )
+    
+    parser.add_argument(
+        "--list-tests",
+        action="store_true",
+        help="List all available test scenarios"
+    )
+    
+    return parser.parse_args()
+
+
+async def main():
+    """
+    Main function to handle command line arguments and run the appropriate action.
+    """
+    args = parse_arguments()
+    
+    # List available tests
+    if args.list_tests:
+        test_queries = create_test_queries()
+        print("📋 Available test scenarios:")
+        for test_name, description in test_queries.items():
+            print(f"  • {test_name}: {description[:80]}{'...' if len(description) > 80 else ''}")
+        return
+    
+    # Run all tests
+    if args.test_all:
+        test_queries = create_test_queries()
+        print(f"🚀 Running all {len(test_queries)} test scenarios...")
+        
+        for test_name in test_queries.keys():
+            await run_test_scenario(test_name)
+            print("\n" + "="*60 + "\n")
+        
+        print("🎉 All tests completed!")
+        return
+    
+    # Run specific test
+    if args.test:
+        await run_test_scenario(args.test)
+        return
+    
+    # Run with custom query
+    if args.query:
+        await run_conversation(args.query)
+        return
+    
+    # Interactive mode
+    print(f"👋 Welcome to {APP_NAME}!")
+    print("💡 Tip: Use --help to see command line options")
+    
+    # Run with default query if no arguments provided
+    await run_conversation()
     
     
     
 
 if __name__ == "__main__":
-    print(f"👋 Welcome to {APP_NAME}!")
-
-    asyncio.run(run_conversation())
+    asyncio.run(main())

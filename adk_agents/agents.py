@@ -19,6 +19,12 @@ from tools.video_editor_tools import (
     add_subtitles
 )
  
+from tools.image_editor_tools import (
+    create_slideshow_from_images,
+    create_image_slideshow,
+    add_text_to_images,
+    create_simple_slideshow
+)
 
 
 model_name= "gemini-2.0-flash"
@@ -63,7 +69,26 @@ video_editor_agent = Agent(
 )
 
 
-
+image_to_video_agent = Agent(
+    name="Image_to_Video_Agent_v1",
+    model=model_name,
+    description="An agent to create videos from images, capable of creating slideshows, adding text overlays, and applying effects.",
+    instruction="""    You are an Image to Video Agent. You can create videos from images.
+    Use the tools provided to perform these tasks.
+    If you need to create a slideshow from images, use the `create_slideshow_from_images` tool.
+    If you need to create a simple slideshow, use the `create_simple_slideshow` tool.
+    If you need to add text overlays to images, use the `add_text_to_images` tool.
+    If you need to create an image slideshow with effects, use the `create_image_slideshow` tool.
+    Make sure to handle errors gracefully and provide useful feedback to the user.
+    """,
+    tools=[
+        create_slideshow_from_images,
+        create_simple_slideshow,
+        add_text_to_images,
+        create_image_slideshow
+    ],
+    output_key="image_to_video_responses"
+)
 
 video_agents_team = Agent(
     name="Video_Agents_Team_v1",
@@ -77,7 +102,7 @@ video_agents_team = Agent(
     Ensure that the workflow is smooth and that each agent performs its tasks effectively.
     Handle errors gracefully and provide useful feedback to the user.
     """,
-    sub_agents=[youtube_agent, video_editor_agent],
+    sub_agents=[youtube_agent, video_editor_agent,image_to_video_agent],
     output_key="final_responses",
     before_model_callback=block_keyword_guardrail,
 )
