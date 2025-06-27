@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent / "tools"))
 
-from tools.image_editor_tools import create_image_slideshow, create_simple_slideshow
+from tools.image import create_image_slideshow, create_simple_slideshow
 
 
 def test_basic_slideshow():

@@ -2,14 +2,14 @@ from google.adk.agents import Agent
 from guards.block_keyword import block_keyword_guardrail
 
 # Tools imports
-from tools.youtube_tools import (
+from tools.youtube import (
     get_transcript,
     get_video_info,
     search_videos,
     download_youtube_video
 )
 
-from tools.video_editor_tools import (
+from tools.video import (
     concatenate_videos,
     synchronize_audio,
     clip_videos,
@@ -21,7 +21,7 @@ from tools.video_editor_tools import (
     extract_audio
 )
  
-from tools.image_editor_tools import (
+from tools.image import (
     create_slideshow_from_images,
     create_image_slideshow,
     add_text_to_images,
@@ -67,7 +67,7 @@ video_editor_agent = Agent(
     If you need to extract audio from a video, use the `extract_audio` tool.
     Make sure to handle errors gracefully and provide useful feedback to the user.
     """,
-    tools=[concatenate_videos, synchronize_audio, clip_videos, edit_video_metadata, add_effects, export_video, add_subtitles],
+    tools=[concatenate_videos, synchronize_audio, clip_videos, edit_video_metadata, add_effects, export_video, add_subtitles, extract_audio],
     output_key="video_editing_responses"
 )
 

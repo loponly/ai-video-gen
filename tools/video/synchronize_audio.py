@@ -1,0 +1,107 @@
+"""
+Audio synchronization functionality
+"""
+
+import os
+from typing import Dict, Any
+from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
+
+
+def synchronize_audio(video_path: str, audio_path: str, output_path: str, 
+                     sync_method: str) -> Dict[str, Any]:
+    """
+    Synchronize audio with video.
+    
+    Args:
+        video_path: Path to the video file
+        audio_path: Path to the audio file
+        output_path: Path where the synchronized video will be saved
+        sync_method: "replace", "overlay", or "mix"
+    
+    Returns:
+        Dict with status, message, and output info
+    """
+    try:
+        # Set default sync method if not provided
+        if not sync_method:
+            sync_method = "replace"
+            
+        # Validate input files
+        if not os.path.exists(video_path):
+            return {
+                "status": "error",
+                "message": f"Video file not found: {video_path}",
+                "output_path": None
+            }
+        
+        if not os.path.exists(audio_path):
+            return {
+                "status": "error",
+                "message": f"Audio file not found: {audio_path}",
+                "output_path": None
+            }
+        
+        # Load video and audio
+        video = VideoFileClip(video_path)
+        audio = AudioFileClip(audio_path)
+        
+        # Create output directory if it doesn't exist
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        # Synchronize based on method
+        if sync_method == "replace":
+            # Replace video audio with new audio
+            final_video = video.with_audio(audio)
+        elif sync_method == "overlay":
+            # Overlay new audio on existing audio
+            if video.audio is not None:
+                mixed_audio = CompositeAudioClip([video.audio, audio])
+                final_video = video.with_audio(mixed_audio)
+            else:
+                final_video = video.with_audio(audio)
+        elif sync_method == "mix":
+            # Mix audio at 50% volume each
+            if video.audio is not None:
+                original_audio = video.audio.with_volume_scaled(0.5)
+                new_audio = audio.with_volume_scaled(0.5)
+                mixed_audio = CompositeAudioClip([original_audio, new_audio])
+                final_video = video.with_audio(mixed_audio)
+            else:
+                final_video = video.with_audio(audio)
+        else:
+            return {
+                "status": "error",
+                "message": f"Invalid sync method: {sync_method}",
+                "output_path": None
+            }
+        
+        # Write the final video
+        final_video.write_videofile(
+            output_path,
+            codec='libx264',
+            audio_codec='aac',
+            temp_audiofile='temp-audio.m4a',
+            remove_temp=True
+        )
+        
+        # Get duration before closing and convert to native Python float
+        duration = float(final_video.duration)
+        
+        # Clean up
+        video.close()
+        audio.close()
+        final_video.close()
+        
+        return {
+            "status": "success",
+            "message": f"Successfully synchronized audio using {sync_method} method",
+            "output_path": output_path,
+            "duration": duration
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Error synchronizing audio: {str(e)}",
+            "output_path": None
+        }

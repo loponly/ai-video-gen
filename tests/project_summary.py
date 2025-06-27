@@ -83,7 +83,7 @@ def main():
     print("   python tests/test_individual_tools.py")
     print("   ")
     print("   # Import in code")
-    print("   from tools.video_editor_tools import concatenate_videos")
+    print("   from tools.video import concatenate_videos")
     
     print(f"\n🎉 Project Status: COMPLETE")
     print(f"   All 7 video editing tools are functional and tested!")

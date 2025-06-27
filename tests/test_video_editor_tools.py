@@ -15,7 +15,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.append(str(project_root))
 
-from tools.video_editor_tools import (
+from tools.video import (
     concatenate_videos,
     synchronize_audio,
     clip_videos,

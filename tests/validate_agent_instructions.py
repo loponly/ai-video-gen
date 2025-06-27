@@ -22,7 +22,7 @@ def validate_agent_instructions():
     
     # Import the agent and tools
     from adk_agents.agents import video_editor_agent
-    from tools.video_editor_tools import (
+    from tools.video import (
         concatenate_videos,
         synchronize_audio,
         clip_videos,

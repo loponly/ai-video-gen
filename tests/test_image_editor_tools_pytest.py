@@ -19,11 +19,13 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent / "tools"))
 
-from tools.image_editor_tools import (
+from tools.image import (
     create_slideshow_from_images,
     create_image_slideshow,
     create_simple_slideshow,
-    add_text_to_images,
+    add_text_to_images
+)
+from tools.image.utils import (
     _create_image_clip,
     _add_text_overlays,
     _apply_effects,
@@ -325,7 +327,7 @@ class TestImageEditorTools:
 def test_module_imports():
     """Test that all required modules can be imported"""
     try:
-        from tools.image_editor_tools import (
+        from tools.image import (
             create_slideshow_from_images,
             create_image_slideshow,
             create_simple_slideshow,

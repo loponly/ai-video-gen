@@ -23,7 +23,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent / "tools"))
 
-from tools.image_editor_tools import (
+from tools.image import (
     create_slideshow_from_images,
     create_image_slideshow,
     create_simple_slideshow,
