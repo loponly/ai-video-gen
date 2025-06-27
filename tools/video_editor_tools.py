@@ -18,7 +18,9 @@ import os
 import json
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
-import moviepy as mp
+from moviepy.editor import VideoFileClip, AudioFileClip, concatenate_videoclips, CompositeAudioClip, clips_array
+from moviepy.video import fx as vfx
+from moviepy.audio import fx as afx
 import ffmpeg
 
 
@@ -48,7 +50,7 @@ def concatenate_videos(video_paths: List[str], output_path: str, method: str) ->
                     "message": f"Video file not found: {path}",
                     "output_path": None
                 }
-            valid_videos.append(mp.VideoFileClip(path))
+            valid_videos.append(VideoFileClip(path))
         
         if not valid_videos:
             return {
@@ -62,10 +64,10 @@ def concatenate_videos(video_paths: List[str], output_path: str, method: str) ->
         
         # Concatenate videos
         if method == "compose":
-            final_video = mp.concatenate_videoclips(valid_videos)
+            final_video = concatenate_videoclips(valid_videos)
         elif method == "stack":
             # Stack videos vertically - use clips_array for this
-            final_video = mp.clips_array([[video] for video in valid_videos])
+            final_video = clips_array([[video] for video in valid_videos])
         else:
             return {
                 "status": "error",
@@ -140,8 +142,8 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
             }
         
         # Load video and audio
-        video = mp.VideoFileClip(video_path)
-        audio = mp.AudioFileClip(audio_path)
+        video = VideoFileClip(video_path)
+        audio = AudioFileClip(audio_path)
         
         # Create output directory if it doesn't exist
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -153,7 +155,7 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
         elif sync_method == "overlay":
             # Overlay new audio on existing audio
             if video.audio is not None:
-                mixed_audio = mp.CompositeAudioClip([video.audio, audio])
+                mixed_audio = CompositeAudioClip([video.audio, audio])
                 final_video = video.with_audio(mixed_audio)
             else:
                 final_video = video.with_audio(audio)
@@ -162,7 +164,7 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
             if video.audio is not None:
                 original_audio = video.audio.with_volume_scaled(0.5)
                 new_audio = audio.with_volume_scaled(0.5)
-                mixed_audio = mp.CompositeAudioClip([original_audio, new_audio])
+                mixed_audio = CompositeAudioClip([original_audio, new_audio])
                 final_video = video.with_audio(mixed_audio)
             else:
                 final_video = video.with_audio(audio)
@@ -234,7 +236,7 @@ def clip_videos(video_path: str, output_path: str, start_time: float,
             }
         
         # Load video
-        video = mp.VideoFileClip(video_path)
+        video = VideoFileClip(video_path)
         original_duration = video.duration
         
         # Create output directory if it doesn't exist
@@ -261,7 +263,7 @@ def clip_videos(video_path: str, output_path: str, start_time: float,
                 clips.append(clip)
             
             if clips:
-                final_video = mp.concatenate_videoclips(clips)
+                final_video = concatenate_videoclips(clips)
             else:
                 return {
                     "status": "error",
@@ -336,7 +338,7 @@ def edit_video_metadata(video_path: str, output_path: str, metadata: Dict[str, s
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
         # Load and copy video (MoviePy doesn't support metadata editing directly)
-        video = mp.VideoFileClip(video_path)
+        video = VideoFileClip(video_path)
         
         # Write the video (this will copy the video without metadata changes)
         video.write_videofile(
@@ -386,7 +388,7 @@ def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]
             }
         
         # Load video
-        video = mp.VideoFileClip(video_path)
+        video = VideoFileClip(video_path)
         
         # Create output directory if it doesn't exist
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
@@ -412,19 +414,19 @@ def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]
                 
             elif effect_type == 'fade_in':
                 duration = effect.get('duration', 1.0)
-                current_video = current_video.with_effects([mp.vfx.FadeIn(duration)])
+                current_video = current_video.with_effects([vfx.FadeIn(duration)])
                 applied_effects.append(f"fade_in({duration}s)")
                 
             elif effect_type == 'fade_out':
                 duration = effect.get('duration', 1.0)
-                current_video = current_video.with_effects([mp.vfx.FadeOut(duration)])
+                current_video = current_video.with_effects([vfx.FadeOut(duration)])
                 applied_effects.append(f"fade_out({duration}s)")
                 
             elif effect_type == 'audio_fade_in':
                 duration = effect.get('duration', 1.0)
                 if current_video.audio:
                     current_video = current_video.with_audio(
-                        current_video.audio.with_effects([mp.afx.AudioFadeIn(duration)])
+                        current_video.audio.with_effects([afx.AudioFadeIn(duration)])
                     )
                 applied_effects.append(f"audio_fade_in({duration}s)")
                 
@@ -432,7 +434,7 @@ def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]
                 duration = effect.get('duration', 1.0)
                 if current_video.audio:
                     current_video = current_video.with_audio(
-                        current_video.audio.with_effects([mp.afx.AudioFadeOut(duration)])
+                        current_video.audio.with_effects([afx.AudioFadeOut(duration)])
                     )
                 applied_effects.append(f"audio_fade_out({duration}s)")
                 
@@ -498,14 +500,30 @@ def export_video(video_path: str, output_path: str, format_settings: Dict[str, A
             }
         
         # Load video
-        video = mp.VideoFileClip(video_path)
+        video = VideoFileClip(video_path)
         
         # Create output directory if it doesn't exist
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
-        # Extract format settings
-        codec = format_settings.get('codec', 'libx264')
-        audio_codec = format_settings.get('audio_codec', 'aac')
+        # Extract format settings and adjust for output format
+        output_ext = os.path.splitext(output_path)[1].lower()
+        
+        # Set appropriate default codecs based on output format
+        if output_ext == '.webm':
+            default_codec = 'libvpx-vp9'  # VP9 for WebM
+            default_audio_codec = None  # Let MoviePy choose for WebM
+        elif output_ext == '.mp4':
+            default_codec = 'libx264'  # H.264 for MP4
+            default_audio_codec = 'aac'  # AAC for MP4
+        elif output_ext == '.avi':
+            default_codec = 'libx264'  # H.264 for AVI
+            default_audio_codec = 'mp3'  # MP3 for AVI
+        else:
+            default_codec = 'libx264'  # Default fallback
+            default_audio_codec = 'aac'  # Default fallback
+        
+        codec = format_settings.get('codec', default_codec)
+        audio_codec = format_settings.get('audio_codec', default_audio_codec)
         bitrate = format_settings.get('bitrate', None)
         fps = format_settings.get('fps', None)
         resolution = format_settings.get('resolution', None)
@@ -515,13 +533,29 @@ def export_video(video_path: str, output_path: str, format_settings: Dict[str, A
             width, height = resolution
             video = video.resized((width, height))
         
+        # Handle case where input and output paths are the same
+        temp_output_path = output_path
+        if os.path.abspath(video_path) == os.path.abspath(output_path):
+            # Create a temporary output path with same extension
+            path_parts = os.path.splitext(output_path)
+            temp_output_path = f"{path_parts[0]}_temp{path_parts[1]}"
+        
         # Prepare write parameters
         write_params = {
             'codec': codec,
-            'audio_codec': audio_codec,
-            'temp_audiofile': 'temp-audio.m4a',
             'remove_temp': True
         }
+        
+        # Handle audio codec and temp file based on output format
+        if output_ext == '.webm':
+            # For WebM, let MoviePy handle audio codec automatically
+            # Don't specify temp_audiofile for WebM to avoid issues
+            pass
+        else:
+            # For other formats, use temp audio file
+            write_params['temp_audiofile'] = 'temp-audio.m4a'
+            if audio_codec:
+                write_params['audio_codec'] = audio_codec
         
         if bitrate:
             write_params['bitrate'] = bitrate
@@ -529,14 +563,20 @@ def export_video(video_path: str, output_path: str, format_settings: Dict[str, A
             write_params['fps'] = fps
         
         # Write the video
-        video.write_videofile(output_path, **write_params)
+        video.write_videofile(temp_output_path, **write_params)
         
         # Get file size and duration and convert to native Python types
-        file_size = int(os.path.getsize(output_path))
+        file_size = int(os.path.getsize(temp_output_path))
         duration = float(video.duration)
         
         # Clean up
         video.close()
+        
+        # If we used a temporary file, replace the original
+        if temp_output_path != output_path:
+            import shutil
+            shutil.move(temp_output_path, output_path)
+            file_size = int(os.path.getsize(output_path))
         
         return {
             "status": "success",
@@ -593,7 +633,7 @@ def add_subtitles(video_path: str, subtitle_path: str, output_path: str,
         options = subtitle_options or {}
         
         # Load and copy video (MoviePy doesn't support subtitle overlay directly)
-        video = mp.VideoFileClip(video_path)
+        video = VideoFileClip(video_path)
         
         # Write the video (this will copy the video)
         video.write_videofile(
@@ -680,7 +720,7 @@ if __name__ == "__main__":
     
     if os.path.exists(video_path):
         try:
-            video = mp.VideoFileClip(video_path)
+            video = VideoFileClip(video_path)
             print(f"✅ Video loaded successfully")
             print(f"   Duration: {video.duration:.2f}s")
             print(f"   Resolution: {video.w}x{video.h}")
