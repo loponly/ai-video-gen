@@ -17,7 +17,8 @@ from tools.video_editor_tools import (
     add_effects,
     export_video,
     add_subtitles,
-    create_video_from_images
+    create_video_from_images,
+    extract_audio
 )
  
 from tools.image_editor_tools import (
@@ -63,6 +64,7 @@ video_editor_agent = Agent(
     If you need to add effects or transitions, use the `add_effects` tool.
     If you need to export the final video, use the `export_video` tool.
     If you need to add subtitles or captions, use the `add_subtitles` tool.
+    If you need to extract audio from a video, use the `extract_audio` tool.
     Make sure to handle errors gracefully and provide useful feedback to the user.
     """,
     tools=[concatenate_videos, synchronize_audio, clip_videos, edit_video_metadata, add_effects, export_video, add_subtitles],
