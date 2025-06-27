@@ -82,8 +82,8 @@ def concatenate_videos(video_paths: List[str], output_path: str, method: str) ->
             remove_temp=True
         )
         
-        # Get duration before closing
-        duration = final_video.duration
+        # Get duration before closing and convert to native Python float
+        duration = float(final_video.duration)
         
         # Clean up
         for video in valid_videos:
@@ -182,8 +182,8 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
             remove_temp=True
         )
         
-        # Get duration before closing
-        duration = final_video.duration
+        # Get duration before closing and convert to native Python float
+        duration = float(final_video.duration)
         
         # Clean up
         video.close()
@@ -286,8 +286,8 @@ def clip_videos(video_path: str, output_path: str, start_time: float,
             remove_temp=True
         )
         
-        # Get duration before closing
-        duration = final_video.duration
+        # Get duration before closing and convert to native Python float
+        duration = float(final_video.duration)
         
         # Clean up
         video.close()
@@ -298,7 +298,7 @@ def clip_videos(video_path: str, output_path: str, start_time: float,
             "message": "Successfully clipped video",
             "output_path": output_path,
             "duration": duration,
-            "original_duration": original_duration
+            "original_duration": float(original_duration)  # Convert this too
         }
         
     except Exception as e:
@@ -453,8 +453,8 @@ def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]
             remove_temp=True
         )
         
-        # Get duration before closing
-        duration = current_video.duration
+        # Get duration before closing and convert to native Python float
+        duration = float(current_video.duration)
         
         # Clean up
         video.close()
@@ -531,9 +531,9 @@ def export_video(video_path: str, output_path: str, format_settings: Dict[str, A
         # Write the video
         video.write_videofile(output_path, **write_params)
         
-        # Get file size and duration
-        file_size = os.path.getsize(output_path)
-        duration = video.duration
+        # Get file size and duration and convert to native Python types
+        file_size = int(os.path.getsize(output_path))
+        duration = float(video.duration)
         
         # Clean up
         video.close()

@@ -156,8 +156,8 @@ def create_slideshow_from_images(image_paths: List[str],
             remove_temp=True
         )
         
-        # Get duration before closing
-        duration = final_video.duration
+        # Get duration before closing and convert to native Python float
+        duration = float(final_video.duration)
         
         # Clean up
         for clip in clips:
@@ -172,8 +172,8 @@ def create_slideshow_from_images(image_paths: List[str],
             "output_path": output_path,
             "duration": duration,
             "resolution": resolution,
-            "fps": fps,
-            "images_count": len(valid_images)
+            "fps": int(fps),  # Ensure fps is native Python int
+            "images_count": int(len(valid_images))  # Ensure count is native Python int
         }
         
     except Exception as e:

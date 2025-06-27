@@ -16,7 +16,8 @@ from tools.video_editor_tools import (
     edit_video_metadata,
     add_effects,
     export_video,
-    add_subtitles
+    add_subtitles,
+    create_video_from_images
 )
  
 from tools.image_editor_tools import (
@@ -79,13 +80,15 @@ image_to_video_agent = Agent(
     If you need to create a simple slideshow, use the `create_simple_slideshow` tool.
     If you need to add text overlays to images, use the `add_text_to_images` tool.
     If you need to create an image slideshow with effects, use the `create_image_slideshow` tool.
+    if you need to create a video from images, use the `create_video_from_images` tool.
     Make sure to handle errors gracefully and provide useful feedback to the user.
     """,
     tools=[
         create_slideshow_from_images,
         create_simple_slideshow,
         add_text_to_images,
-        create_image_slideshow
+        create_image_slideshow,
+        create_video_from_images
     ],
     output_key="image_to_video_responses"
 )
