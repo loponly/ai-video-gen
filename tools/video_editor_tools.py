@@ -22,7 +22,7 @@ import moviepy as mp
 import ffmpeg
 
 
-def concatenate_videos(video_paths: List[str], output_path: str, method: str = "compose") -> Dict[str, Any]:
+def concatenate_videos(video_paths: List[str], output_path: str, method: str) -> Dict[str, Any]:
     """
     Concatenate multiple video clips into a single video.
     
@@ -35,6 +35,10 @@ def concatenate_videos(video_paths: List[str], output_path: str, method: str = "
         Dict with status, message, and output info
     """
     try:
+        # Set default method if not provided
+        if not method:
+            method = "compose"
+            
         # Validate input files
         valid_videos = []
         for path in video_paths:
@@ -102,7 +106,7 @@ def concatenate_videos(video_paths: List[str], output_path: str, method: str = "
 
 
 def synchronize_audio(video_path: str, audio_path: str, output_path: str, 
-                     sync_method: str = "replace") -> Dict[str, Any]:
+                     sync_method: str) -> Dict[str, Any]:
     """
     Synchronize audio with video.
     
@@ -116,6 +120,10 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
         Dict with status, message, and output info
     """
     try:
+        # Set default sync method if not provided
+        if not sync_method:
+            sync_method = "replace"
+            
         # Validate input files
         if not os.path.exists(video_path):
             return {
@@ -197,8 +205,8 @@ def synchronize_audio(video_path: str, audio_path: str, output_path: str,
         }
 
 
-def clip_videos(video_path: str, output_path: str, start_time: float = 0.0, 
-               end_time: Optional[float] = None, segments: Optional[str] = None) -> Dict[str, Any]:
+def clip_videos(video_path: str, output_path: str, start_time: float, 
+               end_time: Optional[float], segments: Optional[str]) -> Dict[str, Any]:
     """
     Clip video(s) to specified segments.
     
@@ -213,6 +221,10 @@ def clip_videos(video_path: str, output_path: str, start_time: float = 0.0,
         Dict with status, message, and output info
     """
     try:
+        # Set default values if not provided
+        if start_time is None:
+            start_time = 0.0
+            
         # Validate input file
         if not os.path.exists(video_path):
             return {
@@ -544,7 +556,7 @@ def export_video(video_path: str, output_path: str, format_settings: Dict[str, A
 
 
 def add_subtitles(video_path: str, subtitle_path: str, output_path: str, 
-                 subtitle_options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+                 subtitle_options: Optional[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Add subtitles or captions to video.
     Note: This function creates a copy of the video. For subtitle overlay, external tools are needed.
@@ -607,6 +619,55 @@ def add_subtitles(video_path: str, subtitle_path: str, output_path: str,
             "status": "error",
             "message": f"Error adding subtitles: {str(e)}",
             "output_path": None
+        }
+
+
+def create_video_from_images(image_paths: List[str], output_path: str, duration_per_image: float) -> Dict[str, Any]:
+    """
+    Create a video slideshow from a list of images.
+    
+    Args:
+        image_paths: List of paths to image files
+        output_path: Path where the video will be saved
+        duration_per_image: Duration each image is displayed (seconds)
+    
+    Returns:
+        Dict with status, message, and output info
+    """
+    try:
+        # Import the image editor tools function
+        from tools.image_editor_tools import create_slideshow_from_images
+        
+        # Create slideshow with basic settings
+        result = create_slideshow_from_images(
+            image_paths=image_paths,
+            output_path=output_path,
+            duration_per_image=duration_per_image,
+            fps=24,
+            resolution_width=1920,
+            resolution_height=1080,
+            transition_type="fade",
+            transition_duration=0.5,
+            background_color_r=0,
+            background_color_g=0,
+            background_color_b=0,
+            fit_mode="contain",
+            audio_path=None,
+            text_overlays=None,
+            effects=None
+        )
+        
+        return result
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Failed to create video from images: {str(e)}",
+            "output_path": None,
+            "details": {
+                "error_type": type(e).__name__,
+                "image_count": len(image_paths)
+            }
         }
 
 
