@@ -202,3 +202,4 @@ cython_debug/
 
 # Movie data
 movie-reels/
+outputs/
