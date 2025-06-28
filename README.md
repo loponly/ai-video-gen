@@ -22,10 +22,19 @@ In today's content landscape, **viral short-form content is king**. Whether it's
 ### 🎯 Multi-Agent AI System
 - **Orchestration Agent**: Coordinates the entire content creation workflow
 - **YouTube Agent**: Download viral content, extract transcripts, analyze trending topics
+- **Script Generator Agent**: AI-powered viral script creation with platform optimization
 - **Video Editor Agent**: Professional editing with viral-focused effects and transitions
 - **Image-to-Video Agent**: Transform static content into dynamic visual experiences
 - **Audio Processing Agent**: Voice-over generation and audio effects optimization
 - **File Management Agent**: Automated organization and batch content production
+
+### 🤖 AI Script Generation
+- **Viral Script Creator**: Generate engaging scripts from topics with platform optimization
+- **Hook Variations**: Create multiple attention-grabbing openings for maximum testing
+- **Content Adaptation**: Transform articles, blogs, and transcripts into viral scripts
+- **Platform Optimization**: Tailor scripts for YouTube Shorts, TikTok, Instagram Reels, Twitter
+- **Transcript Conversion**: Extract viral moments from video transcripts automatically
+- **Engagement Analysis**: Predict viral potential and provide optimization recommendations
 
 ### 📱 Viral Reel Creation
 - **Short-Form Focus**: Optimized for YouTube Shorts, TikTok, Instagram Reels
@@ -112,6 +121,14 @@ ai-video-ge/
 - **Extract Transcripts**: Automatic transcript extraction with timestamps
 - **Video Information**: Metadata, thumbnails, and video details
 - **Search Videos**: Find content by keywords and filters
+
+### Script Generation Tools
+- **Viral Script Creator**: Generate platform-optimized scripts from topics and themes
+- **Hook Variations**: Create multiple attention-grabbing openings with engagement analysis
+- **Content Adapter**: Transform articles, blogs, and transcripts into viral scripts
+- **Platform Optimizer**: Tailor scripts for specific social media platforms and audiences
+- **Transcript Converter**: Extract viral moments and quotes from video transcripts
+- **Engagement Predictor**: Analyze viral potential and provide optimization recommendations
 
 ### Video Editing Tools
 - **Concatenate Videos**: Merge multiple videos with transitions
@@ -214,6 +231,40 @@ Detailed guides available in the `docs/` folder:
 
 ## 🔧 Advanced Usage
 
+### AI Script Generation Examples
+```python
+from tools.script import (
+    generate_viral_script,
+    create_hook_variations,
+    adapt_content_to_script
+)
+
+# Generate viral script for YouTube Shorts
+script_result = generate_viral_script(
+    topic="AI productivity tips",
+    platform="youtube_shorts",
+    style="engaging",
+    duration=60,
+    target_audience="professionals"
+)
+
+# Create multiple hook variations for testing
+hooks_result = create_hook_variations(
+    topic="productivity hacks",
+    platform="tiktok",
+    count=10,
+    emotion="curiosity"
+)
+
+# Adapt existing content into viral script
+adapted_result = adapt_content_to_script(
+    content="Your blog post or article content...",
+    target_platform="instagram_reels",
+    target_duration=45,
+    style="educational"
+)
+```
+
 ### Custom Workflows
 ```python
 from adk_agents import root_agent
@@ -269,23 +320,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Made with ❤️ for content creators and AI enthusiasts**
-processor = VideoProcessor(
-    video_dir="path/to/videos",
-    audio_file="path/to/audio.m4a", 
-    output_file="path/to/output.mp4"
-)
-processor.process_video()
-```
-
-### Configuration Options
-
-- **Fade Duration**: Adjust transition length by modifying `fade_duration` in `VideoProcessor`
-- **Extension Segments**: Control how video is extended by adjusting `segment_duration`
-- **Output Quality**: Modify codec settings in the `write_videofile` call
-
-### Troubleshooting
-
-- **MoviePy Import Error**: Install with `pip install moviepy`
-- **FFmpeg Not Found**: Install FFmpeg on your system
-- **Memory Issues**: For large videos, ensure sufficient RAM or process in smaller batches
-- **File Not Found**: Run `test_video_setup.py` to verify all files exist
