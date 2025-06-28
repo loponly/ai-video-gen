@@ -20,6 +20,7 @@ from .list_directory import list_directory
 from .file_info import get_file_info
 from .batch_rename import batch_rename
 from .find_files import find_files
+from .write_file import write_file
 
 __all__ = [
     'copy_files',
@@ -31,5 +32,6 @@ __all__ = [
     'list_directory',
     'get_file_info',
     'batch_rename',
-    'find_files'
+    'find_files',
+    'write_file'
 ]

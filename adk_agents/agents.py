@@ -6,8 +6,8 @@ This module defines the comprehensive agent team structure with consistent path 
 - Outputs: All final results go to 'outputs/' directory
 - Path validation is enforced through agent instructions
 
-Agent Hierarchy:
-├── video_agents_team (root orchestrator)
+Agent Hierarchy (using sub_agents for LLM-Driven Delegation):
+├── orchestration_agent (root coordinator using transfer_to_agent())
     ├── youtube_agent (downloads to downloads/)
     ├── video_editor_agent (outputs to outputs/)
     ├── image_to_video_agent (outputs to outputs/)
@@ -21,9 +21,15 @@ Capabilities:
 - Audio processing and voice-over generation
 - File management and organization
 - End-to-end multimedia content creation workflows
+
+Architecture:
+- Uses Coordinator/Dispatcher pattern with LLM-Driven Delegation
+- Orchestration agent routes tasks using transfer_to_agent() function calls
+- Each specialist agent has clear descriptions for routing decisions
+- Supports complex multi-agent workflows and task coordination
 """
 
-from google.adk.agents import Agent
+from google.adk.agents import Agent, SequentialAgent
 from guards.block_keyword import block_keyword_guardrail
 from google.adk.tools import agent_tool
 from .path_config import PathConfig
@@ -78,7 +84,8 @@ from tools.file import (
     list_directory,
     get_file_info,
     batch_rename,
-    find_files
+    find_files,
+    write_file
 )
 
 
@@ -88,10 +95,19 @@ model_name= "gemini-2.0-flash"
 youtube_agent = Agent(
     name="YouTube_Agent_v1",
     model=model_name,
-    description="An agent to interact with YouTube, capable of searching videos, downloading them, and extracting transcripts.",
+    description="Specialist agent for YouTube operations: video searching, downloading, transcript extraction, and video metadata retrieval. Handles all YouTube URL processing and content acquisition.",
     instruction="""
-    You are a YouTube Agent. You can search for videos, download them, and extract transcripts.
+    You are a YouTube Agent specializing in YouTube content operations. You extract data but do NOT save files.
     Use the tools provided to perform these tasks with consistent path conventions:
+    
+    CORE RESPONSIBILITIES:
+    - Extract video transcripts and return them as text content
+    - Download videos to 'downloads/' directory
+    - Search for videos and get video information
+    - Process YouTube URLs and metadata
+    
+    IMPORTANT: You extract and return transcript text but do NOT save transcripts to files.
+    File saving should be handled by the File Management Agent.
     
     PATH REQUIREMENTS:
     - ALWAYS save downloaded videos to the 'downloads/' directory
@@ -99,10 +115,15 @@ youtube_agent = Agent(
     - Ensure the downloads/ directory is used for all downloaded content
     
     TOOL USAGE:
-    - If you need to search for a video, use the `search_videos` tool.
+    - If you need to search for a video, use the `search_videos` tool
     - If you need to download a video, use the `download_youtube_video` tool with save_dir='downloads/'
-    - If you need to get the transcript of a video, use the `get_transcript` tool.
-    - If you need to get video information, use the `get_video_info` tool.
+    - If you need to get the transcript of a video, use the `get_transcript` tool and return the text
+    - If you need to get video information, use the `get_video_info` tool
+    
+    WORKFLOW COORDINATION:
+    - For transcript extraction: Use get_transcript and return the transcript text content
+    - Let the orchestrator coordinate with File Management Agent for saving transcripts to files
+    - Always provide the transcript content in your response for further processing
     
     Make sure to handle errors gracefully and provide useful feedback to the user.
     Always confirm the download path when reporting successful downloads.
@@ -115,7 +136,7 @@ youtube_agent = Agent(
 video_editor_agent = Agent(
     name="Video_Editor_Agent_v1",
     model=model_name,
-    description="An agent to edit videos, capable of concatenating clips, synchronizing audio, applying effects, adding subtitles, and exporting videos with custom settings. Enhanced with professional video editing capabilities.",
+    description="Professional video editing specialist: video concatenation, effects, transitions, audio synchronization, subtitle addition, and video export. Handles all video post-production tasks.",
     instruction="""
     You are a Video Editor Agent with professional video editing capabilities. You can perform comprehensive video editing operations including advanced effects, transitions, and audio integration.
     Use the tools provided to perform these tasks with consistent path conventions:
@@ -162,7 +183,7 @@ video_editor_agent = Agent(
 image_to_video_agent = Agent(
     name="Image_to_Video_Agent_v1",
     model=model_name,
-    description="An agent to create videos from images, capable of creating slideshows, adding text overlays, applying effects, and producing professional image-based video content.",
+    description="Image-to-video conversion specialist: slideshow creation, image sequence processing, text overlay addition, and image-based video content generation.",
     instruction="""You are an Image to Video Agent with advanced capabilities for creating professional image-based video content.
     You can create videos from images with sophisticated effects, transitions, and text overlays.
     Use the tools provided to perform these tasks with consistent path conventions:
@@ -210,7 +231,7 @@ image_to_video_agent = Agent(
 audio_processing_agent = Agent(
     name="Audio_Processing_Agent_v1",
     model=model_name,
-    description="An agent specialized in audio processing, voice-over generation, and audio effects application.",
+    description="Audio processing specialist: voice-over generation, text-to-speech, audio effects application, format conversion, and audio file manipulation.",
     instruction="""You are an Audio Processing Agent. You can perform comprehensive audio processing operations including voice-over generation, audio effects, and audio file management.
     Use the tools provided to perform these tasks with consistent path conventions:
     
@@ -259,16 +280,31 @@ audio_processing_agent = Agent(
 file_management_agent = Agent(
     name="File_Management_Agent_v1",
     model=model_name,
-    description="An agent specialized in file and directory operations, organization, and batch processing.",
-    instruction="""You are a File Management Agent. You can perform comprehensive file system operations including copying, moving, organizing, and batch processing files.
+    description="File system operations specialist: file copying, moving, directory management, compression, batch processing, and file organization tasks.",
+    instruction="""You are a File Management Agent. You handle ALL file system operations including saving content to files.
     Use the tools provided to perform these tasks efficiently:
     
+    CORE RESPONSIBILITIES:
+    - Save text content (like transcripts) to files in appropriate directories
+    - Copy, move, organize, and manage files and directories
+    - Handle file compression, extraction, and batch operations
+    - Create proper file structures and naming conventions
+    
     FILE ORGANIZATION:
+    - Save transcripts and text files to 'outputs/' directory
     - Maintain consistent directory structure with downloads/ and outputs/ conventions
-    - Use appropriate file naming and organization strategies
+    - Use appropriate file naming (e.g., video_title_transcript.txt)
     - Respect existing file structures when possible
     
+    SAVING CONTENT TO FILES:
+    - When asked to save transcript content, determine appropriate directory based on user request
+    - For user-specified paths (like downloads/VkQh1D98BGI.txt), use exactly as requested
+    - For general transcript saves without path: save to 'outputs/' directory  
+    - Use video ID from URL for filename when available (e.g., VkQh1D98BGI.txt)
+    - Always confirm successful file creation with full path
+    
     TOOL USAGE:
+    - If you need to write content to a file, use the `write_file` tool with file_path and content
     - If you need to copy files, use the `copy_files` tool with appropriate destination paths
     - If you need to move/relocate files, use the `move_files` tool
     - If you need to create directories, use the `create_directory` tool
@@ -284,6 +320,7 @@ file_management_agent = Agent(
     - Always confirm destructive operations (delete, move) before execution
     - Provide clear feedback about file operations and their results
     - Use appropriate error handling for file system operations
+    - Create directories if they don't exist
     
     Make sure to handle errors gracefully and provide useful feedback to the user.
     Always confirm file paths and operation results in your responses.
@@ -298,48 +335,47 @@ file_management_agent = Agent(
         list_directory,
         get_file_info,
         batch_rename,
-        find_files
+        find_files,
+        write_file
     ],
     output_key="file_management_responses"
 )
 
-video_agents_team = Agent(
+orchestration_agent = Agent(
     name="Video_Agents_Team_v1",
     model=model_name,
     description="The main orchestrator agent that coordinates between YouTube, Video Editor, Image-to-Video, Audio Processing, and File Management agents. It manages the complete workflow of multimedia content creation.",
-    instruction="""You are the Video Agents Team Agent. Your role is to orchestrate tasks between the YouTube, Video Editor, Image-to-Video, Audio Processing, and File Management agents.
-    
-    PATH MANAGEMENT:
-    - Enforce consistent path usage across all agents
-    - Downloads MUST go to 'downloads/' directory
-    - Final outputs MUST go to 'outputs/' directory
-    - Ensure agents follow these path conventions strictly
-    
+    instruction="""You are the Video Agents Team Orchestrator. You use specialist agents to complete user requests.
+
+    AGENT CAPABILITIES:
+    - YouTube_Agent_v1: Search videos, download videos, extract transcripts, get video info
+    - Video_Editor_Agent_v1: Edit videos, add effects, concatenate, export videos
+    - Image_to_Video_Agent_v1: Create slideshows and videos from images
+    - Audio_Processing_Agent_v1: Generate voice-over, apply audio effects
+    - File_Management_Agent_v1: Save files, copy, move, organize files and directories
+
     TASK DELEGATION:
-    - If the task involves searching for videos, downloading them, or extracting transcripts, delegate to the YouTube Agent
-    - If the task involves editing videos, concatenating clips, synchronizing audio, applying effects, adding subtitles, or exporting videos, delegate to the Video Editor Agent
-    - If the task involves creating videos from images, slideshows, or image-based content, delegate to the Image-to-Video Agent
-    - If the task involves audio processing, voice-over generation, audio effects, or audio format conversion, delegate to the Audio Processing Agent
-    - If the task involves file operations, organization, compression, or batch processing, delegate to the File Management Agent
+    For complex requests involving multiple operations, use the appropriate agents:
     
-    WORKFLOW MANAGEMENT:
-    - Ensure that the workflow is smooth and that each agent performs its tasks effectively
-    - Verify that proper paths are used (downloads/ for inputs, outputs/ for final results)
-    - Handle errors gracefully and provide useful feedback to the user
-    - Coordinate between agents when tasks require multiple steps (e.g., download, process, edit, output)
-    - Support complex workflows that involve multiple agent capabilities
+    "Download transcript and save to file":
+    1. Use YouTube_Agent_v1 to extract the transcript content
+    2. Use File_Management_Agent_v1 to save the transcript to the specified file
     
-    MULTIMEDIA WORKFLOWS:
-    - Support end-to-end content creation workflows
-    - Enable voice-over generation for video content
-    - Facilitate audio-video synchronization
-    - Manage file organization throughout the process
+    "Get transcript only": Use YouTube_Agent_v1
+    "Save file only": Use File_Management_Agent_v1
+    "Edit video": Use Video_Editor_Agent_v1
+    "Create slideshow": Use Image_to_Video_Agent_v1
+    "Generate voice-over": Use Audio_Processing_Agent_v1
     
-    Always confirm file locations and paths in your responses to the user.
+    WORKFLOW EXECUTION:
+    - For multi-step tasks, execute the steps in sequence using the appropriate agent tools
+    - Always save transcript files to the location specified by the user
+    - Use video ID from YouTube URLs for filenames when appropriate
+    - Provide clear feedback about each step of the process
     """,
     tools=[
-        agent_tool.AgentTool(agent=youtube_agent), 
-        agent_tool.AgentTool(agent=video_editor_agent), 
+        agent_tool.AgentTool(agent=youtube_agent),
+        agent_tool.AgentTool(agent=video_editor_agent),
         agent_tool.AgentTool(agent=image_to_video_agent),
         agent_tool.AgentTool(agent=audio_processing_agent),
         agent_tool.AgentTool(agent=file_management_agent)
@@ -348,4 +384,4 @@ video_agents_team = Agent(
     before_model_callback=block_keyword_guardrail,
 )
 
-root_agent = video_agents_team
+root_agent = orchestration_agent
