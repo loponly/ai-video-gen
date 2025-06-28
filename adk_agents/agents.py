@@ -15,6 +15,7 @@ Agent Hierarchy:
 
 from google.adk.agents import Agent
 from guards.block_keyword import block_keyword_guardrail
+from google.adk.tools import agent_tool
 from .path_config import PathConfig
 
 # Tools imports
@@ -166,7 +167,7 @@ video_agents_team = Agent(
     
     Always confirm file locations and paths in your responses to the user.
     """,
-    sub_agents=[youtube_agent, video_editor_agent,image_to_video_agent],
+    tools=[agent_tool.AgentTool(agent=youtube_agent), agent_tool.AgentTool(agent=video_editor_agent), agent_tool.AgentTool(agent=image_to_video_agent)],
     output_key="final_responses",
     before_model_callback=block_keyword_guardrail,
 )
