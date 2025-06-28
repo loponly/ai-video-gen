@@ -5,7 +5,9 @@ This package contains comprehensive tools for video creation, editing, and proce
 - Image processing and slideshow creation
 - Video editing and manipulation
 - YouTube integration and content extraction
-- Audio synchronization and processing
+- Audio processing, effects, and voice-over generation
+- File management and organization
+- System utilities and batch operations
 
 All tools follow ADK (Agent Development Kit) standards for:
 - Comprehensive type hints
@@ -17,9 +19,13 @@ All tools follow ADK (Agent Development Kit) standards for:
 from . import image
 from . import video
 from . import youtube
+from . import audio
+from . import file
 
 __all__ = [
     'image',
     'video', 
-    'youtube'
+    'youtube',
+    'audio',
+    'file'
 ]

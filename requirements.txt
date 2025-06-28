@@ -17,6 +17,15 @@ tiktoken
 sentencepiece
 yt-dlp
 
+# Audio processing dependencies
+pydub>=0.25.0
+librosa>=0.10.0
+pyttsx3>=2.90
+gTTS>=2.3.0
+
+# File processing dependencies
+zipfile-deflate64>=0.2.0
+
 # Optional: Add these if you plan to use more advanced embedding models
 # openai>=1.0.0
 # sentence-transformers>=2.2.0
