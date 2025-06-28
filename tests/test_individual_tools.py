@@ -34,7 +34,7 @@ def test_clip_videos():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, f"Test video not found: {video_path}"
     
     print(f"   Input: {video_path}")
     print(f"   Output: {output_path}")
@@ -45,10 +45,10 @@ def test_clip_videos():
     if result["status"] == "success":
         print(f"✅ {result['message']}")
         print(f"   Duration: {result['duration']:.2f}s (original: {result['original_duration']:.2f}s)")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def test_add_effects():
@@ -60,7 +60,7 @@ def test_add_effects():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, f"Test video not found: {video_path}"
     
     effects = [
         {"type": "fade_in", "duration": 1.0},
@@ -77,10 +77,10 @@ def test_add_effects():
     if result["status"] == "success":
         print(f"✅ {result['message']}")
         print(f"   Applied: {', '.join(result['effects_applied'])}")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def test_export_video():
@@ -92,7 +92,7 @@ def test_export_video():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, f"Test video not found: {video_path}"
     
     format_settings = {
         "codec": "libx264",
@@ -110,10 +110,10 @@ def test_export_video():
     if result["status"] == "success":
         print(f"✅ {result['message']}")
         print(f"   File size: {result['file_size'] / (1024*1024):.2f} MB")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def test_concatenate_videos():
@@ -134,10 +134,10 @@ def test_concatenate_videos():
     if result["status"] == "success":
         print(f"✅ {result['message']}")
         print(f"   Duration: {result['duration']:.2f}s")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def test_synchronize_audio():
@@ -150,7 +150,7 @@ def test_synchronize_audio():
     
     if not os.path.exists(audio_path):
         print(f"❌ Test audio not found: {audio_path}")
-        return False
+        assert False, f"Test audio not found: {audio_path}"
     
     print(f"   Video: {video_path}")
     print(f"   Audio: {audio_path}")
@@ -161,10 +161,10 @@ def test_synchronize_audio():
     if result["status"] == "success":
         print(f"✅ {result['message']}")
         print(f"   Duration: {result['duration']:.2f}s")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def test_edit_metadata():
@@ -190,10 +190,10 @@ def test_edit_metadata():
     if result["status"] == "success":
         print(f"✅ {result['message']}")
         print(f"   Updated: {', '.join(result['metadata_updated'])}")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def test_add_subtitles():
@@ -208,7 +208,7 @@ def test_add_subtitles():
     
     if not srt_files:
         print(f"❌ No SRT files found in {srt_dir}")
-        return False
+        assert False, f"No SRT files found in {srt_dir}"
     
     subtitle_path = os.path.join(srt_dir, srt_files[0])
     output_path = "/Users/enkhbat_1/projects/ai-video-ge/movie-reels/output/test_subtitles.mp4"
@@ -221,10 +221,10 @@ def test_add_subtitles():
     
     if result["status"] == "success":
         print(f"✅ {result['message']}")
-        return True
+        assert True
     else:
         print(f"❌ {result['message']}")
-        return False
+        assert False, result['message']
 
 
 def main():

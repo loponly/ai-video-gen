@@ -8,21 +8,37 @@ from typing import List, Dict, Any
 from moviepy.editor import VideoFileClip, concatenate_videoclips, clips_array
 
 
-def concatenate_videos(video_paths: List[str], output_path: str, method: str) -> Dict[str, Any]:
+def concatenate_videos(video_paths: List[str], output_path: str, method: str = "compose") -> Dict[str, Any]:
     """
-    Concatenate multiple video clips into a single video.
+    Concatenate multiple video clips into a single video file.
+    
+    Use this tool when you need to join multiple video files together end-to-end
+    or stack them vertically. The tool supports two concatenation methods:
+    'compose' for sequential joining and 'stack' for vertical arrangement.
     
     Args:
-        video_paths: List of paths to video files to concatenate
-        output_path: Path where the concatenated video will be saved
-        method: Method for concatenation ("compose" or "stack")
+        video_paths: List of absolute file paths to video files that will be concatenated.
+                    All videos should exist and be valid video files.
+        output_path: Absolute path where the concatenated video will be saved.
+                    Directory will be created if it doesn't exist.
+        method: Method for concatenation. 'compose' joins videos sequentially,
+               'stack' arranges videos vertically. Defaults to 'compose'.
     
     Returns:
-        Dict with status, message, and output info
+        A dictionary containing the concatenation result:
+        - status: 'success' if concatenation completed, 'error' if failed
+        - message: Descriptive message about the operation result
+        - output_path: Path to the created video file (None if error)
+        - duration: Total duration of concatenated video in seconds (if success)
+        
+        Example success: {'status': 'success', 'message': 'Successfully concatenated 3 videos', 
+                         'output_path': '/path/to/output.mp4', 'duration': 45.2}
+        Example error: {'status': 'error', 'message': 'Video file not found: /invalid/path.mp4', 
+                       'output_path': None}
     """
     try:
-        # Set default method if not provided
-        if not method:
+        # Validate method parameter
+        if method not in ["compose", "stack"]:
             method = "compose"
             
         # Validate input files

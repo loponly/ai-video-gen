@@ -27,7 +27,11 @@ from tools.image import (
     create_slideshow_from_images,
     create_image_slideshow,
     create_simple_slideshow,
-    add_text_to_images,
+    add_text_to_images
+)
+
+# Import helper functions directly from source files
+from tools.image.create_slideshow_from_images import (
     _create_image_clip,
     _add_text_overlays,
     _apply_effects,

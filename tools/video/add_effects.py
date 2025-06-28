@@ -4,9 +4,17 @@ Video effects functionality
 
 import os
 from typing import List, Dict, Any
+
+# Import PIL compatibility patch first
+from . import pil_compat
+
 from moviepy.editor import VideoFileClip
-from moviepy.video import fx as vfx
-from moviepy.audio import fx as afx
+from moviepy.video.fx.fadein import fadein
+from moviepy.video.fx.fadeout import fadeout
+from moviepy.video.fx.speedx import speedx
+from moviepy.video.fx.resize import resize
+from moviepy.audio.fx.audio_fadein import audio_fadein
+from moviepy.audio.fx.audio_fadeout import audio_fadeout
 
 
 def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]) -> Dict[str, Any]:
@@ -46,38 +54,38 @@ def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]
             if effect_type == 'resize':
                 width = effect.get('width', current_video.w)
                 height = effect.get('height', current_video.h)
-                current_video = current_video.resized((width, height))
+                current_video = current_video.resize((width, height))
                 applied_effects.append(f"resize({width}x{height})")
                 
             elif effect_type == 'speed':
                 factor = effect.get('factor', 1.0)
-                # Use with_speed_scaled method for changing speed
-                current_video = current_video.with_speed_scaled(factor)
+                # Use fx for changing speed
+                current_video = current_video.fx(speedx, factor)
                 applied_effects.append(f"speed({factor}x)")
                 
             elif effect_type == 'fade_in':
                 duration = effect.get('duration', 1.0)
-                current_video = current_video.with_effects([vfx.FadeIn(duration)])
+                current_video = current_video.fx(fadein, duration)
                 applied_effects.append(f"fade_in({duration}s)")
                 
             elif effect_type == 'fade_out':
                 duration = effect.get('duration', 1.0)
-                current_video = current_video.with_effects([vfx.FadeOut(duration)])
+                current_video = current_video.fx(fadeout, duration)
                 applied_effects.append(f"fade_out({duration}s)")
                 
             elif effect_type == 'audio_fade_in':
                 duration = effect.get('duration', 1.0)
                 if current_video.audio:
-                    current_video = current_video.with_audio(
-                        current_video.audio.with_effects([afx.AudioFadeIn(duration)])
+                    current_video = current_video.set_audio(
+                        current_video.audio.fx(audio_fadein, duration)
                     )
                 applied_effects.append(f"audio_fade_in({duration}s)")
                 
             elif effect_type == 'audio_fade_out':
                 duration = effect.get('duration', 1.0)
                 if current_video.audio:
-                    current_video = current_video.with_audio(
-                        current_video.audio.with_effects([afx.AudioFadeOut(duration)])
+                    current_video = current_video.set_audio(
+                        current_video.audio.fx(audio_fadeout, duration)
                     )
                 applied_effects.append(f"audio_fade_out({duration}s)")
                 
@@ -86,7 +94,7 @@ def add_effects(video_path: str, output_path: str, effects: List[Dict[str, Any]]
                 y1 = effect.get('y1', 0)
                 x2 = effect.get('x2', current_video.w)
                 y2 = effect.get('y2', current_video.h)
-                current_video = current_video.cropped(x1=x1, y1=y1, x2=x2, y2=y2)
+                current_video = current_video.crop(x1=x1, y1=y1, x2=x2, y2=y2)
                 applied_effects.append(f"crop({x1},{y1},{x2},{y2})")
         
         # Write the final video

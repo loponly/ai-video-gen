@@ -5,22 +5,48 @@ Video export functionality
 import os
 import shutil
 from typing import Dict, Any
+
+# Import PIL compatibility patch first
+from . import pil_compat
+
 from moviepy.editor import VideoFileClip
 
 
 def export_video(video_path: str, output_path: str, format_settings: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Export video with specific format settings.
+    Export video with specific format settings and codec options.
+    
+    Use this tool when you need to convert video to different formats or apply
+    specific encoding settings like resolution, bitrate, or codec changes.
     
     Args:
-        video_path: Path to the input video file
-        output_path: Path where the exported video will be saved
-        format_settings: Dictionary with export settings (codec, bitrate, resolution, etc.)
+        video_path: Absolute path to the input video file to be exported.
+        output_path: Absolute path where the exported video will be saved.
+                    File extension determines output format (.mp4, .webm, .avi).
+                    Directory will be created if it doesn't exist.
+        format_settings: Dictionary with export configuration options.
+                        Supported keys: 'codec', 'audio_codec', 'bitrate', 
+                        'resolution', 'fps'. If None, uses format-appropriate defaults.
     
     Returns:
-        Dict with status, message, and output info
+        A dictionary containing the export result:
+        - status: 'success' if export completed, 'error' if failed
+        - message: Descriptive message about the operation result
+        - output_path: Path to the exported video file (None if error)
+        - duration: Duration of exported video in seconds (if success)
+        - format: Output format/extension used (if success)
+        - settings_used: The export settings that were applied (if success)
+        
+        Example success: {'status': 'success', 'message': 'Successfully exported video',
+                         'output_path': '/path/to/exported.mp4', 'duration': 75.2,
+                         'format': 'mp4', 'settings_used': {'codec': 'libx264'}}
+        Example error: {'status': 'error', 'message': 'Video file not found: /invalid/path.mp4',
+                       'output_path': None}
     """
     try:
+        # Set default format settings if not provided
+        if format_settings is None:
+            format_settings = {}
         # Validate input file
         if not os.path.exists(video_path):
             return {
@@ -61,7 +87,7 @@ def export_video(video_path: str, output_path: str, format_settings: Dict[str, A
         # Apply resolution if specified
         if resolution:
             width, height = resolution
-            video = video.resized((width, height))
+            video = video.resize((width, height))
         
         # Handle case where input and output paths are the same
         temp_output_path = output_path

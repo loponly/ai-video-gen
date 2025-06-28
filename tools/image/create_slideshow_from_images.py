@@ -21,13 +21,10 @@ def create_slideshow_from_images(image_paths: List[str],
                                 output_path: str,
                                 duration_per_image: float = 3.0,
                                 fps: int = 24,
-                                resolution_width: int = 1920,
-                                resolution_height: int = 1080,
+                                resolution: Tuple[int, int] = (1920, 1080),
                                 transition_type: str = "fade",
                                 transition_duration: float = 0.5,
-                                background_color_r: int = 0,
-                                background_color_g: int = 0,
-                                background_color_b: int = 0,
+                                background_color: Tuple[int, int, int] = (0, 0, 0),
                                 fit_mode: str = "contain",
                                 audio_path: Optional[str] = None,
                                 text_overlays: Optional[List[Dict[str, Any]]] = None,
@@ -35,31 +32,45 @@ def create_slideshow_from_images(image_paths: List[str],
     """
     Convert a list of images to a video slideshow with transitions and effects.
     
+    Use this tool when you need to create a video slideshow from a collection of images
+    with professional transitions, text overlays, and effects. Supports various aspect
+    ratios, transition types, and customization options.
+    
     Args:
-        image_paths: List of paths to image files
-        output_path: Path where the video will be saved
-        duration_per_image: Duration each image is displayed (seconds)
-        fps: Frames per second for output video
-        resolution_width: Output video width in pixels
-        resolution_height: Output video height in pixels
-        transition_type: Type of transition ("fade", "slide_left", "slide_right", "slide_up", "slide_down", "zoom", "crossfade", "none")
-        transition_duration: Duration of transitions (seconds)
-        background_color_r: Background red color component (0-255)
-        background_color_g: Background green color component (0-255)
-        background_color_b: Background blue color component (0-255)
-        fit_mode: How to fit images ("contain", "cover", "stretch", "crop")
-        audio_path: Optional path to audio file to add as background
-        text_overlays: List of text overlay configurations
-        effects: List of effects to apply
+        image_paths: List of absolute paths to image files.
+                    Supported formats: JPG, PNG, BMP, TIFF, WEBP.
+        output_path: Absolute path where the video slideshow will be saved.
+                    Directory will be created if it doesn't exist.
+        duration_per_image: Duration each image is displayed in seconds. Defaults to 3.0.
+        fps: Frames per second for output video. Defaults to 24.
+        resolution: Output video resolution as (width, height) tuple. Defaults to (1920, 1080).
+        transition_type: Type of transition between images.
+                        Options: "fade", "slide_left", "slide_right", "slide_up", 
+                        "slide_down", "zoom", "crossfade", "none". Defaults to "fade".
+        transition_duration: Duration of transitions in seconds. Defaults to 0.5.
+        background_color: Background color as (r, g, b) tuple (0-255). Defaults to (0, 0, 0).
+        fit_mode: How to fit images in the frame.
+                 Options: "contain", "cover", "stretch", "crop". Defaults to "contain".
+        audio_path: Optional absolute path to audio file for background music.
+        text_overlays: Optional list of text overlay configurations with positioning and styling.
+        effects: Optional list of visual effects to apply to images.
         
     Returns:
-        Dict with status, message, and output info
+        A dictionary containing the slideshow creation result:
+        - status: 'success' if slideshow created, 'error' if failed
+        - message: Descriptive message about the operation result
+        - output_path: Path to the created video file (None if error)
+        - duration: Total duration of slideshow in seconds (if success)
+        - images_count: Number of images processed (if success)
+        - resolution: Output resolution used (if success)
+        
+        Example success: {'status': 'success', 'message': 'Successfully created slideshow',
+                         'output_path': '/path/to/slideshow.mp4', 'duration': 15.5,
+                         'images_count': 5, 'resolution': (1920, 1080)}
+        Example error: {'status': 'error', 'message': 'No valid images found',
+                       'output_path': None}
     """
     try:
-        # Convert separate parameters back to tuples for internal use
-        resolution = (resolution_width, resolution_height)
-        background_color = (background_color_r, background_color_g, background_color_b)
-        
         # Validate input images
         if not image_paths:
             return {
@@ -159,7 +170,7 @@ def create_slideshow_from_images(image_paths: List[str],
             "output_path": output_path,
             "duration": duration,
             "file_size": file_size,
-            "image_count": len(valid_images),
+            "images_count": len(valid_images),
             "fps": fps,
             "resolution": resolution
         }

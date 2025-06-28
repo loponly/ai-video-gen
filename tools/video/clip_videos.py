@@ -8,25 +8,40 @@ from typing import Dict, Any, Optional
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 
-def clip_videos(video_path: str, output_path: str, start_time: float, 
-               end_time: Optional[float], segments: Optional[str]) -> Dict[str, Any]:
+def clip_videos(video_path: str, output_path: str, start_time: float = 0.0, 
+               end_time: Optional[float] = None, segments: Optional[str] = None) -> Dict[str, Any]:
     """
-    Clip video(s) to specified segments.
+    Clip video to specified segments or time range.
+    
+    Use this tool when you need to extract specific portions of a video.
+    You can either clip a single segment using start_time and end_time,
+    or extract multiple segments using the segments parameter.
     
     Args:
-        video_path: Path to the input video file
-        output_path: Path where the clipped video will be saved
-        start_time: Start time in seconds (for single clip)
-        end_time: End time in seconds (for single clip)
-        segments: JSON string of (start, end) tuples for multiple segments, e.g., "[[0,10],[20,30]]"
+        video_path: Absolute path to the input video file to be clipped.
+        output_path: Absolute path where the clipped video will be saved.
+                    Directory will be created if it doesn't exist.
+        start_time: Start time in seconds for single clip extraction. Defaults to 0.0.
+        end_time: End time in seconds for single clip. If None, clips to end of video.
+        segments: JSON string of (start, end) time pairs for multiple segments.
+                 Format: "[[0,10],[20,30]]" for clips from 0-10s and 20-30s.
+                 If provided, start_time and end_time are ignored.
     
     Returns:
-        Dict with status, message, and output info
+        A dictionary containing the clipping result:
+        - status: 'success' if clipping completed, 'error' if failed
+        - message: Descriptive message about the operation result  
+        - output_path: Path to the created video file (None if error)
+        - duration: Duration of clipped video in seconds (if success)
+        - original_duration: Duration of original video in seconds (if success)
+        
+        Example success: {'status': 'success', 'message': 'Successfully clipped video',
+                         'output_path': '/path/to/clipped.mp4', 'duration': 10.5, 
+                         'original_duration': 60.0}
+        Example error: {'status': 'error', 'message': 'Video file not found: /invalid/path.mp4',
+                       'output_path': None}
     """
     try:
-        # Set default values if not provided
-        if start_time is None:
-            start_time = 0.0
             
         # Validate input file
         if not os.path.exists(video_path):
@@ -60,7 +75,7 @@ def clip_videos(video_path: str, output_path: str, start_time: float,
             for start, end in segments_list:
                 if end > video.duration:
                     end = video.duration
-                clip = video.subclipped(start, end)
+                clip = video.subclip(start, end)
                 clips.append(clip)
             
             if clips:
@@ -78,7 +93,7 @@ def clip_videos(video_path: str, output_path: str, start_time: float,
             elif end_time > video.duration:
                 end_time = video.duration
             
-            final_video = video.subclipped(start_time, end_time)
+            final_video = video.subclip(start_time, end_time)
         
         # Write the final video
         final_video.write_videofile(

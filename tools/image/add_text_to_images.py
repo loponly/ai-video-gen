@@ -15,14 +15,33 @@ def add_text_to_images(image_paths: List[str],
     """
     Add text overlays to images and save them as new image files.
     
+    Use this tool when you need to add captions, titles, or annotations to images.
+    The tool supports customizable text styling including font size, color, position,
+    and outline effects for better readability.
+    
     Args:
-        image_paths: List of paths to input images
-        output_dir: Directory to save processed images
-        texts: List of text strings to overlay (one per image)
-        text_config: Configuration for text appearance
+        image_paths: List of absolute paths to input image files.
+                    Supported formats: JPG, PNG, BMP, TIFF.
+        output_dir: Absolute path to directory where processed images will be saved.
+                   Directory will be created if it doesn't exist.
+        texts: List of text strings to overlay on images.
+              Must have same length as image_paths (one text per image).
+        text_config: Optional configuration for text appearance.
+                    Supported options: 'font_size', 'font_color', 'position',
+                    'margin', 'outline_color', 'outline_width'.
+                    If None, uses default styling.
     
     Returns:
-        Dict with status, message, and list of output files
+        A dictionary containing the text overlay result:
+        - status: 'success' if all images processed, 'error' if failed
+        - message: Descriptive message about the operation result
+        - output_files: List of paths to created image files (empty if error)
+        - images_processed: Number of images successfully processed (if success)
+        
+        Example success: {'status': 'success', 'message': 'Successfully added text to 3 images',
+                         'output_files': ['/path/to/image1_text.jpg'], 'images_processed': 3}
+        Example error: {'status': 'error', 'message': 'Number of texts must match number of images',
+                       'output_files': []}
     """
     try:
         if not os.path.exists(output_dir):

@@ -8,21 +8,41 @@ from moviepy.editor import VideoFileClip
 
 
 def add_subtitles(video_path: str, subtitle_path: str, output_path: str, 
-                 subtitle_options: Optional[Dict[str, Any]]) -> Dict[str, Any]:
+                 subtitle_options: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
-    Add subtitles or captions to video.
-    Note: This function creates a copy of the video. For subtitle overlay, external tools are needed.
+    Add subtitles or captions to video file.
+    
+    Use this tool when you need to embed subtitle files into video.
+    Note: This function creates a copy of the video with subtitle metadata.
+    For visual subtitle overlay, external tools may be needed.
     
     Args:
-        video_path: Path to the input video file
-        subtitle_path: Path to the subtitle file (.srt, .vtt, .ass)
-        output_path: Path where the video with subtitles will be saved
-        subtitle_options: Optional styling options for subtitles
+        video_path: Absolute path to the input video file.
+        subtitle_path: Absolute path to the subtitle file (.srt, .vtt, .ass format).
+        output_path: Absolute path where the video with subtitles will be saved.
+                    Directory will be created if it doesn't exist.
+        subtitle_options: Optional styling configuration for subtitles.
+                         Can include font, size, color, position settings.
+                         If None, default styling will be applied.
     
     Returns:
-        Dict with status, message, and output info
+        A dictionary containing the subtitle addition result:
+        - status: 'success' if subtitles added successfully, 'error' if failed
+        - message: Descriptive message about the operation result
+        - output_path: Path to the created video file (None if error) 
+        - duration: Duration of output video in seconds (if success)
+        - subtitle_format: Format of the subtitle file processed (if success)
+        
+        Example success: {'status': 'success', 'message': 'Successfully added subtitles',
+                         'output_path': '/path/to/subtitled.mp4', 'duration': 90.3,
+                         'subtitle_format': 'srt'}
+        Example error: {'status': 'error', 'message': 'Video file not found: /invalid/path.mp4',
+                       'output_path': None}
     """
     try:
+        # Set default subtitle options if not provided
+        if subtitle_options is None:
+            subtitle_options = {}
         # Validate input files
         if not os.path.exists(video_path):
             return {
