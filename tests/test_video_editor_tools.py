@@ -36,7 +36,7 @@ def test_clip_videos():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, "Test failed"
     
     # Test clipping first 5 seconds
     result = clip_videos(video_path, output_path, start_time=0, end_time=5)
@@ -45,10 +45,10 @@ def test_clip_videos():
         print(f"✅ Successfully clipped video: {result['message']}")
         print(f"   Output: {result['output_path']}")
         print(f"   Duration: {result['duration']:.2f}s")
-        return True
+        assert True
     else:
         print(f"❌ Failed to clip video: {result['message']}")
-        return False
+        assert False, f"Failed to clip video: {result['message']}"
 
 
 def test_add_effects():
@@ -60,7 +60,7 @@ def test_add_effects():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, "Test failed"
     
     effects = [
         {"type": "fade_in", "duration": 1.0},
@@ -74,10 +74,10 @@ def test_add_effects():
         print(f"✅ Successfully added effects: {result['message']}")
         print(f"   Effects applied: {', '.join(result['effects_applied'])}")
         print(f"   Output: {result['output_path']}")
-        return True
+        assert True
     else:
         print(f"❌ Failed to add effects: {result['message']}")
-        return False
+        assert False, "Test failed"
 
 
 def test_export_video():
@@ -89,7 +89,7 @@ def test_export_video():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, "Test failed"
     
     format_settings = {
         "codec": "libx264",
@@ -104,10 +104,10 @@ def test_export_video():
         print(f"✅ Successfully exported video: {result['message']}")
         print(f"   File size: {result['file_size'] / (1024*1024):.2f} MB")
         print(f"   Output: {result['output_path']}")
-        return True
+        assert True
     else:
         print(f"❌ Failed to export video: {result['message']}")
-        return False
+        assert False, "Test failed"
 
 
 def test_concatenate_videos():
@@ -120,7 +120,7 @@ def test_concatenate_videos():
     
     if len(video_files) < 2:
         print(f"❌ Need at least 2 video files in {video_dir}")
-        return False
+        assert False, "Test failed"
     
     test_videos = [
         os.path.join(video_dir, video_files[0]),
@@ -134,10 +134,10 @@ def test_concatenate_videos():
         print(f"✅ Successfully concatenated videos: {result['message']}")
         print(f"   Duration: {result['duration']:.2f}s")
         print(f"   Output: {result['output_path']}")
-        return True
+        assert True
     else:
         print(f"❌ Failed to concatenate videos: {result['message']}")
-        return False
+        assert False, "Test failed"
 
 
 def test_synchronize_audio():
@@ -150,11 +150,11 @@ def test_synchronize_audio():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, "Test failed"
     
     if not os.path.exists(audio_path):
         print(f"❌ Test audio not found: {audio_path}")
-        return False
+        assert False, "Test failed"
     
     result = synchronize_audio(video_path, audio_path, output_path)
     
@@ -162,10 +162,10 @@ def test_synchronize_audio():
         print(f"✅ Successfully synchronized audio: {result['message']}")
         print(f"   Duration: {result['duration']:.2f}s")
         print(f"   Output: {result['output_path']}")
-        return True
+        assert True
     else:
         print(f"❌ Failed to synchronize audio: {result['message']}")
-        return False
+        assert False, "Test failed"
 
 
 def test_edit_video_metadata():
@@ -177,7 +177,7 @@ def test_edit_video_metadata():
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, "Test failed"
     
     metadata = {
         "title": "Test Video",
@@ -192,10 +192,10 @@ def test_edit_video_metadata():
         print(f"✅ Successfully updated metadata: {result['message']}")
         print(f"   Metadata updated: {', '.join(result['metadata_updated'])}")
         print(f"   Output: {result['output_path']}")
-        return True
+        assert True
     else:
         print(f"❌ Failed to update metadata: {result['message']}")
-        return False
+        assert False, "Test failed"
 
 
 def test_add_subtitles():
@@ -210,14 +210,14 @@ def test_add_subtitles():
     
     if not srt_files:
         print(f"❌ No SRT files found in {srt_dir}")
-        return False
+        assert False, "Test failed"
     
     subtitle_path = os.path.join(srt_dir, srt_files[0])
     output_path = "/Users/enkhbat_1/projects/ai-video-ge/movie-reels/output/test_subtitles.mp4"
     
     if not os.path.exists(video_path):
         print(f"❌ Test video not found: {video_path}")
-        return False
+        assert False, "Test failed"
     
     subtitle_options = {
         "font_size": 20,
@@ -230,10 +230,10 @@ def test_add_subtitles():
         print(f"✅ Successfully added subtitles: {result['message']}")
         print(f"   Subtitle file: {result['subtitle_file']}")
         print(f"   Output: {result['output_path']}")
-        return True
+        assert True
     else:
         print(f"❌ Failed to add subtitles: {result['message']}")
-        return False
+        assert False, "Test failed"
 
 
 def main():

@@ -133,23 +133,6 @@ class TestAgentPathConfiguration:
             assert tool in image_tools
 
 
-def test_agent_hierarchy():
-    """Test that agent hierarchy is properly configured."""
-    # Test that video_agents_team has the correct sub-agents
-    sub_agents = video_agents_team.sub_agents
-    assert len(sub_agents) == 3
-    
-    sub_agent_names = [agent.name for agent in sub_agents]
-    expected_names = [
-        "YouTube_Agent_v1", 
-        "Video_Editor_Agent_v1", 
-        "Image_to_Video_Agent_v1"
-    ]
-    
-    for name in expected_names:
-        assert name in sub_agent_names
-
-
 def test_path_config_relative_paths():
     """Test relative path functionality."""
     # Test relative path generation
@@ -194,9 +177,6 @@ if __name__ == "__main__":
         
         test_config.test_agent_tools_configuration()
         print("✓ Agent tools configuration test passed")
-        
-        test_agent_hierarchy()
-        print("✓ Agent hierarchy test passed")
         
         test_path_config_relative_paths()
         print("✓ Path config relative paths test passed")

@@ -43,7 +43,7 @@ class TestExtractAudio:
         assert "Video file not found" in result["message"]
         assert result["output_path"] is None
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     def test_extract_audio_no_audio_track(self, mock_video_clip):
         """Test extract_audio with video that has no audio track."""
         # Create a temporary video file
@@ -64,7 +64,7 @@ class TestExtractAudio:
         assert result["output_path"] is None
         mock_video.close.assert_called_once()
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     @patch('os.path.getsize')
     def test_extract_audio_mp3_success(self, mock_getsize, mock_video_clip):
         """Test successful audio extraction to MP3 format."""
@@ -106,7 +106,7 @@ class TestExtractAudio:
         mock_audio.close.assert_called_once()
         mock_video.close.assert_called_once()
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     @patch('os.path.getsize')
     def test_extract_audio_wav_format(self, mock_getsize, mock_video_clip):
         """Test audio extraction to WAV format."""
@@ -142,7 +142,7 @@ class TestExtractAudio:
             codec='pcm_s16le'
         )
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     @patch('os.path.getsize')
     def test_extract_audio_format_inference(self, mock_getsize, mock_video_clip):
         """Test audio format inference from output file extension."""
@@ -178,7 +178,7 @@ class TestExtractAudio:
             codec='flac'
         )
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     @patch('os.path.getsize')
     def test_extract_audio_unknown_format_defaults_to_mp3(self, mock_getsize, mock_video_clip):
         """Test that unknown format defaults to MP3."""
@@ -215,7 +215,7 @@ class TestExtractAudio:
             codec='mp3'
         )
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     def test_extract_audio_handles_none_sample_rate(self, mock_video_clip):
         """Test extraction when audio has no fps (sample rate)."""
         # Create a temporary video file
@@ -241,7 +241,7 @@ class TestExtractAudio:
         assert result["sample_rate"] is None
         assert result["duration"] == 45.0
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     def test_extract_audio_exception_handling(self, mock_video_clip):
         """Test exception handling during audio extraction."""
         # Create a temporary video file
@@ -260,7 +260,7 @@ class TestExtractAudio:
         assert "Codec error" in result["message"]
         assert result["output_path"] is None
     
-    @patch('tools.video_editor_tools.VideoFileClip')
+    @patch('tools.video.extract_audio.VideoFileClip')
     @patch('os.path.getsize')
     def test_extract_audio_aac_m4a_formats(self, mock_getsize, mock_video_clip):
         """Test audio extraction to AAC and M4A formats."""
