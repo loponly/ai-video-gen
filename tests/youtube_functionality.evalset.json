@@ -1,0 +1,169 @@
+{
+    "eval_set_id": "ai_video_generator_youtube_functionality",
+    "name": "YouTube Agent Functionality Tests",
+    "description": "Comprehensive evaluation tests for YouTube agent capabilities including search, download, and transcript extraction",
+    "eval_cases": [
+        {
+            "eval_id": "youtube_search_basic",
+            "conversation": [
+                {
+                    "invocation_id": "yt-search-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Search for videos about 'machine learning tutorial' and show me 5 results"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I found 5 videos about machine learning tutorial. Here are the search results with titles, URLs, durations, and view counts."
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "search_videos",
+                                "args": {
+                                    "keyword": "machine learning tutorial",
+                                    "max_results": 5
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "youtube_download_with_path_compliance",
+            "conversation": [
+                {
+                    "invocation_id": "yt-download-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Download this YouTube video: https://youtube.com/watch?v=dQw4w9WgXcQ"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully downloaded the video to the downloads/ directory. The file is saved as downloads/Never Gonna Give You Up.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "download_youtube_video",
+                                "args": {
+                                    "url": "https://youtube.com/watch?v=dQw4w9WgXcQ",
+                                    "save_dir": "downloads/"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "youtube_get_transcript",
+            "conversation": [
+                {
+                    "invocation_id": "yt-transcript-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Get the transcript for this video: https://youtube.com/watch?v=example123"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have retrieved the transcript for the video. Here is the full transcript with timestamps."
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "get_transcript",
+                                "args": {
+                                    "video_url": "https://youtube.com/watch?v=example123"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "youtube_get_video_info",
+            "conversation": [
+                {
+                    "invocation_id": "yt-info-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Get detailed information about this video: https://youtube.com/watch?v=example456"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "Here is the detailed information for the video including title, description, duration, view count, upload date, and channel information."
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "get_video_info",
+                                "args": {
+                                    "video_url": "https://youtube.com/watch?v=example456"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        }
+    ]
+}

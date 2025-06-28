@@ -1,0 +1,220 @@
+{
+    "eval_set_id": "ai_video_generator_video_editing",
+    "name": "Video Editor Agent Functionality Tests",
+    "description": "Comprehensive evaluation tests for video editing capabilities including concatenation, effects, subtitles, and export with proper path compliance",
+    "eval_cases": [
+        {
+            "eval_id": "video_concatenation_with_output_path",
+            "conversation": [
+                {
+                    "invocation_id": "ve-concat-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Concatenate these video files: downloads/video1.mp4, downloads/video2.mp4, downloads/video3.mp4 and save the result"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully concatenated the three videos and saved the result to outputs/concatenated_video.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "concatenate_videos",
+                                "args": {
+                                    "video_paths": [
+                                        "downloads/video1.mp4",
+                                        "downloads/video2.mp4",
+                                        "downloads/video3.mp4"
+                                    ],
+                                    "output_path": "outputs/concatenated_video.mp4"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "add_subtitles_to_video",
+            "conversation": [
+                {
+                    "invocation_id": "ve-subtitles-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Add subtitles to the video downloads/input_video.mp4 with the text 'Hello World! This is a test subtitle.'"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully added subtitles to the video and saved it to outputs/video_with_subtitles.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "add_subtitles",
+                                "args": {
+                                    "video_path": "downloads/input_video.mp4",
+                                    "subtitle_text": "Hello World! This is a test subtitle.",
+                                    "output_path": "outputs/video_with_subtitles.mp4"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "extract_audio_from_video",
+            "conversation": [
+                {
+                    "invocation_id": "ve-audio-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Extract audio from the video downloads/sample_video.mp4"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully extracted the audio and saved it to outputs/extracted_audio.mp3"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "extract_audio",
+                                "args": {
+                                    "video_path": "downloads/sample_video.mp4",
+                                    "output_path": "outputs/extracted_audio.mp3"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "video_export_with_custom_settings",
+            "conversation": [
+                {
+                    "invocation_id": "ve-export-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Export the video downloads/raw_video.mp4 with high quality settings and save it to outputs"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully exported the video with high quality settings to outputs/high_quality_video.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "export_video",
+                                "args": {
+                                    "input_path": "downloads/raw_video.mp4",
+                                    "output_path": "outputs/high_quality_video.mp4",
+                                    "quality": "high"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "clip_video_segments",
+            "conversation": [
+                {
+                    "invocation_id": "ve-clip-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Clip the video downloads/long_video.mp4 from 30 seconds to 90 seconds"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully clipped the video segment and saved it to outputs/clipped_video.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "clip_videos",
+                                "args": {
+                                    "video_path": "downloads/long_video.mp4",
+                                    "start_time": 30,
+                                    "end_time": 90,
+                                    "output_path": "outputs/clipped_video.mp4"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": []
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        }
+    ]
+}

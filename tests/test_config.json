@@ -1,0 +1,7 @@
+{
+    "criteria": {
+        "tool_trajectory_avg_score": 1.0,
+        "response_match_score": 0.8
+    },
+    "description": "Standard evaluation criteria for AI Video Generator agents. Requires perfect tool trajectory matching and allows slight variations in response text."
+}

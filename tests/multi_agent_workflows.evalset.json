@@ -1,0 +1,348 @@
+{
+    "eval_set_id": "ai_video_generator_multi_agent_workflows",
+    "name": "Multi-Agent Workflow Tests",
+    "description": "Comprehensive evaluation tests for multi-agent coordination between YouTube, Video Editor, and Image-to-Video agents",
+    "eval_cases": [
+        {
+            "eval_id": "download_and_edit_workflow",
+            "conversation": [
+                {
+                    "invocation_id": "multi-001",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Download the video from https://youtube.com/watch?v=example789 and then add fade-in effect to it"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have successfully downloaded the video to downloads/ and applied a fade-in effect. The final video is saved as outputs/video_with_fade_effect.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "download_youtube_video",
+                                "args": {
+                                    "url": "https://youtube.com/watch?v=example789",
+                                    "save_dir": "downloads/"
+                                }
+                            },
+                            {
+                                "name": "add_effects",
+                                "args": {
+                                    "video_path": "downloads/example789.mp4",
+                                    "effect_type": "fade_in",
+                                    "output_path": "outputs/video_with_fade_effect.mp4"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": [
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "Video downloaded successfully to downloads/example789.mp4"
+                                    }
+                                ]
+                            ],
+                            [
+                                "Video_Editor_Agent_v1",
+                                [
+                                    {
+                                        "text": "Fade-in effect applied successfully. Video saved to outputs/video_with_fade_effect.mp4"
+                                    }
+                                ]
+                            ]
+                        ]
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "search_download_and_process_workflow",
+            "conversation": [
+                {
+                    "invocation_id": "multi-002",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Search for 'cooking tutorial' videos, download the first result, and extract its audio"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I found cooking tutorial videos, downloaded the first result to downloads/, and extracted its audio to outputs/cooking_tutorial_audio.mp3"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "search_videos",
+                                "args": {
+                                    "keyword": "cooking tutorial",
+                                    "max_results": 1
+                                }
+                            },
+                            {
+                                "name": "download_youtube_video",
+                                "args": {
+                                    "url": "https://youtube.com/watch?v=cooking123",
+                                    "save_dir": "downloads/"
+                                }
+                            },
+                            {
+                                "name": "extract_audio",
+                                "args": {
+                                    "video_path": "downloads/cooking123.mp4",
+                                    "output_path": "outputs/cooking_tutorial_audio.mp3"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": [
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "Found 1 cooking tutorial video. Here are the results."
+                                    }
+                                ]
+                            ],
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "Video downloaded successfully to downloads/cooking123.mp4"
+                                    }
+                                ]
+                            ],
+                            [
+                                "Video_Editor_Agent_v1",
+                                [
+                                    {
+                                        "text": "Audio extracted successfully to outputs/cooking_tutorial_audio.mp3"
+                                    }
+                                ]
+                            ]
+                        ]
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "image_to_video_with_youtube_audio",
+            "conversation": [
+                {
+                    "invocation_id": "multi-003",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Create a slideshow from images in assets/images/ folder and use audio from a YouTube video https://youtube.com/watch?v=music456"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have created a slideshow from the images and synchronized it with the audio from the YouTube video. The final video is saved as outputs/slideshow_with_music.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "download_youtube_video",
+                                "args": {
+                                    "url": "https://youtube.com/watch?v=music456",
+                                    "save_dir": "downloads/"
+                                }
+                            },
+                            {
+                                "name": "extract_audio",
+                                "args": {
+                                    "video_path": "downloads/music456.mp4",
+                                    "output_path": "downloads/background_music.mp3"
+                                }
+                            },
+                            {
+                                "name": "create_slideshow_from_images",
+                                "args": {
+                                    "image_folder": "assets/images/",
+                                    "output_path": "outputs/slideshow_with_music.mp4",
+                                    "audio_path": "downloads/background_music.mp3"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": [
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "Video downloaded successfully to downloads/music456.mp4"
+                                    }
+                                ]
+                            ],
+                            [
+                                "Video_Editor_Agent_v1",
+                                [
+                                    {
+                                        "text": "Audio extracted to downloads/background_music.mp3"
+                                    }
+                                ]
+                            ],
+                            [
+                                "Image_to_Video_Agent_v1",
+                                [
+                                    {
+                                        "text": "Slideshow created with background music and saved to outputs/slideshow_with_music.mp4"
+                                    }
+                                ]
+                            ]
+                        ]
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        },
+        {
+            "eval_id": "complete_video_production_workflow",
+            "conversation": [
+                {
+                    "invocation_id": "multi-004",
+                    "user_content": {
+                        "parts": [
+                            {
+                                "text": "Search for 'nature documentary' videos, download 2 of them, concatenate them, and add subtitles saying 'Beautiful Nature'"
+                            }
+                        ],
+                        "role": "user"
+                    },
+                    "final_response": {
+                        "parts": [
+                            {
+                                "text": "I have completed the full workflow: searched for nature documentaries, downloaded 2 videos to downloads/, concatenated them, and added subtitles. The final video is saved as outputs/nature_documentary_with_subtitles.mp4"
+                            }
+                        ],
+                        "role": "model"
+                    },
+                    "intermediate_data": {
+                        "tool_uses": [
+                            {
+                                "name": "search_videos",
+                                "args": {
+                                    "keyword": "nature documentary",
+                                    "max_results": 2
+                                }
+                            },
+                            {
+                                "name": "download_youtube_video",
+                                "args": {
+                                    "url": "https://youtube.com/watch?v=nature1",
+                                    "save_dir": "downloads/"
+                                }
+                            },
+                            {
+                                "name": "download_youtube_video",
+                                "args": {
+                                    "url": "https://youtube.com/watch?v=nature2",
+                                    "save_dir": "downloads/"
+                                }
+                            },
+                            {
+                                "name": "concatenate_videos",
+                                "args": {
+                                    "video_paths": [
+                                        "downloads/nature1.mp4",
+                                        "downloads/nature2.mp4"
+                                    ],
+                                    "output_path": "outputs/concatenated_nature.mp4"
+                                }
+                            },
+                            {
+                                "name": "add_subtitles",
+                                "args": {
+                                    "video_path": "outputs/concatenated_nature.mp4",
+                                    "subtitle_text": "Beautiful Nature",
+                                    "output_path": "outputs/nature_documentary_with_subtitles.mp4"
+                                }
+                            }
+                        ],
+                        "intermediate_responses": [
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "Found 2 nature documentary videos"
+                                    }
+                                ]
+                            ],
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "First video downloaded to downloads/nature1.mp4"
+                                    }
+                                ]
+                            ],
+                            [
+                                "YouTube_Agent_v1",
+                                [
+                                    {
+                                        "text": "Second video downloaded to downloads/nature2.mp4"
+                                    }
+                                ]
+                            ],
+                            [
+                                "Video_Editor_Agent_v1",
+                                [
+                                    {
+                                        "text": "Videos concatenated and saved to outputs/concatenated_nature.mp4"
+                                    }
+                                ]
+                            ],
+                            [
+                                "Video_Editor_Agent_v1",
+                                [
+                                    {
+                                        "text": "Subtitles added. Final video saved to outputs/nature_documentary_with_subtitles.mp4"
+                                    }
+                                ]
+                            ]
+                        ]
+                    }
+                }
+            ],
+            "session_input": {
+                "app_name": "ai_video_generator",
+                "user_id": "test_user",
+                "state": {}
+            }
+        }
+    ]
+}
