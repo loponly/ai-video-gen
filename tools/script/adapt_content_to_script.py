@@ -17,6 +17,7 @@ def adapt_content_to_script(
     focus_points: Optional[List[str]] = None,
     maintain_key_messages: bool = True
 ) -> Dict[str, Any]:
+    
     """
     Adapt existing content into a viral script format.
     
