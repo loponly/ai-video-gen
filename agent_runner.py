@@ -153,7 +153,6 @@ async def run_test_scenario(test_name: str):
     print(f"✅ Test scenario '{test_name}' completed.")
     return response
 
-
 def parse_arguments():
     """
     Parse command line arguments.
