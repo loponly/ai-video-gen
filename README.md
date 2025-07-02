@@ -57,6 +57,14 @@ In today's content landscape, **viral short-form content is king**. Whether it's
 - **Audio Processing**: Effects, normalization, mixing, and format conversion
 - **Batch Processing**: Handle multiple files efficiently
 
+### File Management
+- **Directory Management**: Organize content with automated folder structures
+- **Batch Operations**: Process multiple files simultaneously
+- **File Compression**: Create and extract archives for efficient storage
+- **Search & Find**: Locate files by pattern and type
+- **Copy & Move**: Relocate files while preserving structure
+
+
 ## 🚀 Quick Start
 
 ### Installation
