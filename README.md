@@ -328,3 +328,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Made with ❤️ for content creators and AI enthusiasts**
+
+If you want to host your own bots use following link [Digital Ocean](https://m.do.co/c/dadd38bc9606)
