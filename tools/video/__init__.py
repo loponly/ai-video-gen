@@ -4,7 +4,8 @@ Video Tools Package
 This package contains tools for video editing including:
 - Video concatenation
 - Audio synchronization
-- Video clipping
+- Video clipping (basic and advanced)
+- Advanced video cutting with multiple modes
 - Metadata editing
 - Effects and transitions
 - Video export
@@ -16,6 +17,7 @@ This package contains tools for video editing including:
 from .concatenate_videos import concatenate_videos
 from .synchronize_audio import synchronize_audio
 from .clip_videos import clip_videos
+from .cut_video import cut_video, cut_video_by_scenes
 from .edit_video_metadata import edit_video_metadata
 from .add_effects import add_effects
 from .export_video import export_video
@@ -27,6 +29,8 @@ __all__ = [
     'concatenate_videos',
     'synchronize_audio',
     'clip_videos',
+    'cut_video',
+    'cut_video_by_scenes',
     'edit_video_metadata',
     'add_effects',
     'export_video',
