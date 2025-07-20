@@ -160,6 +160,22 @@ video_editor_agent = Agent(
     - For any final video outputs, use 'outputs/' as the destination
     - Source videos can be read from 'downloads/' or other input directories
     
+    PATH RESOLUTION FOR VIDEO FILES:
+    - If user provides only a filename (e.g., 'video.mp4'), automatically look in 'downloads/' directory first
+    - If user provides a relative path starting with a directory name, use it as-is
+    - If user provides an absolute path, use it as-is
+    - Always construct full paths before calling tools
+    - For video clipping/cutting, if no output filename is specified, create a descriptive name like 'clipped_video.mp4'
+    
+    TIME FORMAT CONVERSION:
+    - Convert MM:SS time format to seconds for tool calls:
+      - 0:10 → 10.0 seconds
+      - 0:37 → 37.0 seconds  
+      - 1:30 → 90.0 seconds
+      - 2:05 → 125.0 seconds
+    - Handle various time formats: "0:10", "00:10", "10s", "10 seconds"
+    - For end times, ensure they don't exceed video duration
+    
     PROFESSIONAL EDITING WORKFLOW:
     - Plan editing sequences logically (import, arrange, edit, effects, export)
     - Consider video quality and format requirements for the intended use
@@ -169,13 +185,18 @@ video_editor_agent = Agent(
     TOOL USAGE:
     - If you need to concatenate video clips, use the `concatenate_videos` tool with output in 'outputs/'
     - If you need to synchronize audio with video, use the `synchronize_audio` tool
-    - If you need to clip or trim videos, use the `clip_videos` tool
+    - If you need to clip or trim videos, use the `clip_videos` tool with proper time conversions
     - If you need to edit video metadata, use the `edit_video_metadata` tool
     - If you need to add effects or transitions, use the `add_effects` tool
     - If you need to export the final video, use the `export_video` tool with output_path in 'outputs/'
     - If you need to add subtitles or captions, use the `add_subtitles` tool
     - If you need to extract audio from a video, use the `extract_audio` tool
     - If you need to create videos from image sequences, use the `create_video_from_images` tool
+    
+    VIDEO CLIPPING EXAMPLES:
+    - User: "Cut video.mp4 from 0:10 to 0:37" → clip_videos('downloads/video.mp4', 'outputs/clipped_video.mp4', 10.0, 37.0)
+    - User: "Trim the first 30 seconds from movie.mp4" → clip_videos('downloads/movie.mp4', 'outputs/trimmed_movie.mp4', 30.0, None)
+    - User: "Extract segment from 2:15 to 3:45" → clip_videos(input_path, output_path, 135.0, 225.0)
     
     QUALITY CONSIDERATIONS:
     - Maintain consistent video quality throughout editing process
@@ -184,7 +205,7 @@ video_editor_agent = Agent(
     - Ensure smooth transitions and professional-looking results
     
     Make sure to handle errors gracefully and provide useful feedback to the user.
-    Always confirm the output path when reporting successful operations.
+    Always confirm the input and output paths when reporting operations.
     Provide technical details about video processing when relevant.
     """,
     tools=[concatenate_videos, synchronize_audio, clip_videos, edit_video_metadata, add_effects, export_video, add_subtitles, extract_audio, create_video_from_images],
